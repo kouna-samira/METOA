@@ -19,13 +19,37 @@ public class Trajet {
     public Trajet() {
     }
 
+<<<<<<< HEAD
     public Trajet(LocalDate dateTrajet, String depart, String destination,  double distance) {
+=======
+
+    public Trajet(String idTrajet, LocalDate dateTrajet, String depart, String destination, double distance) {
+        this.idTrajet = idTrajet;
+>>>>>>> cc79e66 (fin des entites)
         this.dateTrajet = dateTrajet;
         this.depart = depart;
         this.destination = destination;
         this.distance = distance;
     }
 
+<<<<<<< HEAD
+=======
+    public Trajet(LocalDate dateTrajet, String depart, String destination, double distance) {
+        this.dateTrajet = dateTrajet;
+        this.depart = depart;
+        this.destination = destination;
+        this.distance = distance;
+    }
+
+    public String getIdTrajet() {
+        return idTrajet;
+    }
+
+    public void setIdTrajet(String idTrajet) {
+        this.idTrajet = idTrajet;
+    }
+
+>>>>>>> cc79e66 (fin des entites)
     public LocalDate getDateTrajet() {
         return dateTrajet;
     }
