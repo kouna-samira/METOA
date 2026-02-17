@@ -23,7 +23,7 @@ public class Passager {
     private String prenom;
 
     @Column(name="email", nullable=false, unique=true)
-    @Schema(description="Email du passager", example="sarahngono@yahoo.com")
+    @Schema(description="Email du passager", example="sarah@yahoo.com")
     private String email;
 
     @Column(name="telephone")
