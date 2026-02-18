@@ -23,4 +23,6 @@ public interface ConducteurRepository extends JpaRepository<Conducteur, Long> {
 
     // Recherche nom + prénom partiels
     List<Conducteur> findByNomContainingIgnoreCaseAndPrenomContainingIgnoreCase(String nom, String prenom);
+
+    Optional<Conducteur> findByNomAndPrenomAllIgnoreCase(String nom, String prenom);
 }

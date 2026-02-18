@@ -18,4 +18,6 @@ public interface PassagerRepository extends JpaRepository<Passager, Long> {
     List<Passager> findByNomContainingIgnoreCase(String nom);
 
     List<Passager> findByNomContainingIgnoreCaseAndPrenomContainingIgnoreCase(String nom, String prenom);
+
+    Optional<Passager> findByNomAndPrenomAllIgnoreCase(String nom, String prenom);
 }

@@ -20,4 +20,5 @@ public interface TrajetRepository extends JpaRepository<Trajet, Long>{
     //Trouver le trajet d'un conducteur
     List<Trajet> findByConducteurId(Long conducteurId);
 
+    List<Trajet> findByVilleDepartAndVilleArriveeIgnoreCase(String depart, String arrivee);
 }
