@@ -2,11 +2,11 @@ package com.metoa.repository;
 
 import com.metoa.entity.Passager;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-//Repository Passager
-
+@Repository
 public interface PassagerRepository extends JpaRepository<Passager, Long> {
 
     Optional<Passager> findByEmail(String email);
@@ -18,6 +18,4 @@ public interface PassagerRepository extends JpaRepository<Passager, Long> {
     List<Passager> findByNomContainingIgnoreCase(String nom);
 
     List<Passager> findByNomContainingIgnoreCaseAndPrenomContainingIgnoreCase(String nom, String prenom);
-
-    Optional<Passager> findByNomAndPrenomAllIgnoreCase(String nom, String prenom);
 }
