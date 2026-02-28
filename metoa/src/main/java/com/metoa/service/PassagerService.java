@@ -1,53 +1,26 @@
 package com.metoa.service;
 
-import com.metoa.entity.Passager;
-import com.metoa.repository.PassagerRepository;
-import org.springframework.stereotype.Service;
-
+import com.metoa.entity.Reservation;
+import com.metoa.entity.Trajet;
 import java.util.List;
 import java.util.Optional;
 
-@Service
-public class PassagerService {
+/*Interface pour les services liés au passager
+  Contient toutes les fonctionnalités que le passager peut utiliser
+ */
+public interface PassagerService {
 
-    private final PassagerRepository repository;
+    // Suivi des trajets
+    Optional<Trajet> suivreTrajetEnTempsReel(Long trajetId); // Suivi du trajet en temps réel
 
-    public PassagerService(PassagerRepository repository){
-        this.repository = repository;
-    }
+    // Historique
+    List<Reservation> consulterHistoriqueReservations(Long passagerId);
 
-    // Sauvegarde passager
-    public Passager save(Passager passager){
-        return repository.save(passager);
-    }
+    // Recherche de trajets
+    List<Trajet> rechercherTrajets(String villeDepart, String villeArrivee, String dateDepart);
 
-    // Liste complète
-    public List<Passager> getAll(){
-        return repository.findAll();
-    }
-
-    // Recherche par ID
-    public Optional<Passager> getById(Long id){
-        return repository.findById(id);
-    }
-
-    // Suppression
-    public void delete(Long id){
-        repository.deleteById(id);
-    }
-
-    // Recherche par email
-    public Optional<Passager> findByEmail(String email){
-        return repository.findByEmail(email);
-    }
-
-    // Recherche nom + prénom
-    public Optional<Passager> findByNomPrenom(String nom,String prenom){
-        return repository.findByNomAndPrenomAllIgnoreCase(nom,prenom);
-    }
-
-    // Recherche partielle nom
-    public List<Passager> searchNom(String nom){
-        return repository.findByNomContainingIgnoreCase(nom);
-    }
+    // Fonctionnalités avancées (à compléter plus tard)
+    List<Trajet> rechercheMulticritere(String villeDepart, String villeArrivee, String dateDepart, Double maxDistance);
+    List<Trajet> rechercherProximite(Double latitude, Double longitude, Double rayonKm);
+    void alerteDisponibilite(Long trajetId, Long passagerId);
 }

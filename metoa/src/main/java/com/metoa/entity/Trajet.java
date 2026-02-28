@@ -1,56 +1,85 @@
 package com.metoa.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Entity
-@Table(name="trajet")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Table(name = "trajet",
+        indexes = {
+                @Index(name = "idx_depart", columnList = "ville_depart_id"),
+                @Index(name = "idx_arrivee", columnList = "ville_arrivee_id"),
+                @Index(name = "idx_date", columnList = "date_depart")
+        })
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString
 public class Trajet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
-    @Schema(description="Identifiant unique du trajet", example="1")
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="conducteur_id")
-    @Schema(description="Conducteur qui propose le trajet")
+    @JoinColumn(name = "conducteur_id", nullable = false)
+    @NotNull
     private Conducteur conducteur;
 
     @ManyToOne
-    @JoinColumn(name="vehicule_id")
-    @Schema(description="Véhicule utilisé pour le trajet")
+    @JoinColumn(name = "vehicule_id", nullable = false)
+    @NotNull
     private Vehicule vehicule;
 
     @ManyToOne
-    @JoinColumn(name="ville_depart_id")
-    @Schema(description="Ville de départ du trajet")
+    @JoinColumn(name = "ville_depart_id", nullable = false)
+    @NotNull
+    @ToString.Exclude
     private Ville villeDepart;
 
     @ManyToOne
-    @JoinColumn(name="ville_arrivee_id")
-    @Schema(description="Ville d'arrivée du trajet")
+    @JoinColumn(name = "ville_arrivee_id", nullable = false)
+    @NotNull
+    @ToString.Exclude
     private Ville villeArrivee;
 
-    @Column(name="date_depart", nullable=false)
-    @Schema(description="Date et heure du départ", example="2026-03-01T08:30")
-    private java.time.LocalDateTime dateDepart;
+    @Column(name = "date_depart", nullable = false)
+    @NotNull
+    private LocalDateTime dateDepart;
 
-    @Column(name="prix", nullable=false)
-    @Schema(description="Prix du trajet en FCFA", example="2500")
-    private double prix;
-
-    @Column(name="places_disponibles", nullable=false)
-    @Schema(description="Nombre de places disponibles pour le trajet", example="3")
+    @Min(1)
+    @Column(nullable = false)
     private int placesDisponibles;
 
-    @Column(name="statut")
-    @Schema(description="Statut du trajet", example="EN_ATTENTE")
-    private String statut;
+    @Column(nullable = false)
+    private double prix;
 
-    @OneToMany(mappedBy="trajet", cascade=CascadeType.ALL)
-    @Schema(description="Liste des réservations pour ce trajet")
-    private java.util.List<Reservation> reservations;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StatutTrajet statut;
+
+    @Column(name = "latitude_depart")
+    private Double latitudeDepart; // optionnel, sinon on prend celle de la ville
+
+    @Column(name = "longitude_depart")
+    private Double longitudeDepart;
+
+    @Column(name = "latitude_arrivee")
+    private Double latitudeArrivee;
+
+    @Column(name = "longitude_arrivee")
+    private Double longitudeArrivee;
+
+    @OneToMany(mappedBy = "trajet", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reservation> reservations;
+
+    // Méthode utilitaire pour passer de brouillon à publié
+    public void setPublie(boolean publie) {
+        this.statut = publie ? StatutTrajet.PUBLIE : StatutTrajet.BROUILLON;
+    }
 }

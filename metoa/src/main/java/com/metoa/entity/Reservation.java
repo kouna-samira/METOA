@@ -2,37 +2,35 @@ package com.metoa.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
+
 @Entity
-@Table(name="reservation")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
-    @Schema(description="Identifiant unique de la réservation", example="1")
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="passager_id")
-    @Schema(description="Passager ayant effectué la réservation")
-    private Passager passager;
-
-    @ManyToOne
-    @JoinColumn(name="trajet_id")
-    @Schema(description="Trajet réservé")
+    @JoinColumn(name = "trajet_id", nullable = false)
     private Trajet trajet;
 
-    @Column(name="places_reservees", nullable=false)
-    @Schema(description="Nombre de places réservées", example="2")
-    private int nombrePlacesReservees;
+    @ManyToOne
+    @JoinColumn(name = "passager_id", nullable = false)
+    private Passager passager;
 
-    @Column(name="statut")
-    @Schema(description="Statut de la réservation", example="EN_ATTENTE")
-    private String statut;
+    @Column(name = "places_reservees", nullable = false)
+    private int placesReservees;
 
-    @Column(name="date_reservation", nullable=false)
-    @Schema(description="Date et heure de la réservation", example="2026-02-17T12:00")
-    private java.time.LocalDateTime dateReservation;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ReservationStatut statut;
+
+    @Column(name = "date_reservation", nullable = false)
+    private LocalDateTime dateReservation;
 }

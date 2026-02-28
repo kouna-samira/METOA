@@ -1,49 +1,44 @@
 package com.metoa.service;
 
 import com.metoa.entity.Trajet;
-import com.metoa.repository.TrajetRepository;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
-@Service
-public class TrajetService {
+public interface TrajetService {
+    Trajet creerTrajet(Trajet trajet);
+    Trajet modifierTrajet(Trajet trajet);
+    void supprimerTrajet(Long trajetId);
+    Optional<Trajet> getTrajet(Long trajetId);
+    List<Trajet> getAllTrajets();
 
-    private final TrajetRepository repository;
+    /*
+    //FONCTIONNALITÉS AVANCÉES
 
-    public TrajetService(TrajetRepository repository){
-        this.repository = repository;
-    }
+// Publier un trajet (changer statut BROUILLON → PUBLIÉ)
+Trajet publierTrajet(Long trajetId);
 
-    // Créer ou modifier trajet
-    public Trajet save(Trajet trajet){
-        return repository.save(trajet);
-    }
+// Recherche multicritère intelligente
+ List<Trajet> rechercherTrajetsMulticritere(String villeDepart, String villeArrivee, String dateDepart, Double maxDistance);
 
-    // Tous les trajets
-    public List<Trajet> getAll(){
-        return repository.findAll();
-    }
+// Recherche de trajets par proximité GPS
+ List<Trajet> rechercherTrajetsProximite(Double latitude, Double longitude, Double rayonKm);
 
-    // Recherche par ID
-    public Optional<Trajet> getById(Long id){
-        return repository.findById(id);
-    }
+// Suivi temps réel d’un trajet
+ Trajet suivreTrajetTempsReel(Long trajetId);
 
-    // Suppression trajet
-    public void delete(Long id){
-        repository.deleteById(id);
-    }
+// Historique des trajets d’un conducteur
+ List<Trajet> historiqueConducteur(Long conducteurId);
 
-    // Recherche par ville départ + arrivée
-    public List<Trajet> search(String depart,String arrivee){
-        return repository.findByVilleDepartAndVilleArriveeIgnoreCase(depart,arrivee);
-    }
+// Historique des trajets d’un passager
+ List<Trajet> historiquePassager(Long passagerId);
 
-    // Trajets d’un conducteur
-    public List<Trajet> findByConducteur(Long conducteurId){
-        return repository.findByConducteurId(conducteurId);
-    }
+// Détection automatique trajets similaires (optimisation covoiturage)
+ List<Trajet> suggererTrajetsSimilaires(Long trajetId);
+
+// Vérification disponibilité places restantes
+ boolean verifierDisponibilite(Long trajetId);
+
+// Alerte disponibilité trajet (notification si un trajet apparaît)
+ void activerAlerteDisponibilite(String villeDepart, String villeArrivee);
+*/
 }
-
