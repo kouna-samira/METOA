@@ -1,6 +1,7 @@
 package com.metoa.service;
 
 import com.metoa.entity.Ville;
+import com.metoa.exception.ResourceNotFoundException;
 import com.metoa.repository.VilleRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -22,12 +23,17 @@ public class VilleServiceImpl implements VilleService {
 
     @Override
     public Ville modifierVille(Ville ville) {
+        if (!villeRepository.existsById(ville.getId())) {
+            throw new ResourceNotFoundException("Ville non trouvée avec id: " + ville.getId());
+        }
         return villeRepository.save(ville);
     }
 
     @Override
     public void supprimerVille(Long villeId) {
-        villeRepository.deleteById(villeId);
+        Ville ville = villeRepository.findById(villeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ville non trouvée avec id: " + villeId));
+        villeRepository.delete(ville);
     }
 
     @Override

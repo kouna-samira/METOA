@@ -1,17 +1,19 @@
 package com.metoa.service;
 
 import com.metoa.entity.Reservation;
+import com.metoa.entity.ReservationStatut;
+import com.metoa.entity.StatutTrajet;
 import com.metoa.entity.Trajet;
+import com.metoa.exception.ResourceNotFoundException;
 import com.metoa.repository.ReservationRepository;
 import com.metoa.repository.TrajetRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-/*Implémentation des services ConducteurService
-  Contient la logique métier pour chaque fonctionnalité
-  */
 @Service
+@Transactional
 public class ConducteurServiceImpl implements ConducteurService {
 
     private final TrajetRepository trajetRepository;
@@ -23,58 +25,58 @@ public class ConducteurServiceImpl implements ConducteurService {
         this.reservationRepository = reservationRepository;
     }
 
-    // Gestion des trajets
     @Override
     public Trajet ajouterTrajet(Trajet trajet) {
-        // Logique pour ajouter un trajet avec coordonnées GPS pour la carte
-        // Assurez-vous que latitudeDepart, longitudeDepart, latitudeArrivee, longitudeArrivee sont renseignés
+        // Le trajet est créé en brouillon par défaut
+        trajet.setStatut(StatutTrajet.BROUILLON);
         return trajetRepository.save(trajet);
     }
 
     @Override
     public Trajet publierTrajet(Long trajetId) {
-        // Logique pour publier un trajet
-        Trajet trajet = trajetRepository.findById(trajetId).orElseThrow(() -> new RuntimeException("Trajet non trouvé"));
-        trajet.setPublie(true); // suppose que tu as un champ boolean 'publie' dans Trajet
+        Trajet trajet = trajetRepository.findById(trajetId)
+                .orElseThrow(() -> new ResourceNotFoundException("Trajet non trouvé avec id: " + trajetId));
+        trajet.setPublie(true); // ou trajet.setStatut(StatutTrajet.PUBLIE);
         return trajetRepository.save(trajet);
     }
 
     @Override
     public Trajet modifierTrajet(Trajet trajet) {
-        // Logique pour modifier un trajet existant
+        // Vérifier que le trajet existe (l'id est fourni)
+        if (!trajetRepository.existsById(trajet.getId())) {
+            throw new ResourceNotFoundException("Trajet non trouvé avec id: " + trajet.getId());
+        }
         return trajetRepository.save(trajet);
     }
 
     @Override
     public void supprimerTrajet(Long trajetId) {
-        trajetRepository.deleteById(trajetId);
+        Trajet trajet = trajetRepository.findById(trajetId)
+                .orElseThrow(() -> new ResourceNotFoundException("Trajet non trouvé avec id: " + trajetId));
+        trajetRepository.delete(trajet);
     }
 
-    // Gestion des réservations
     @Override
     public Reservation accepterReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
-        reservation.setAcceptee(true);
+                .orElseThrow(() -> new ResourceNotFoundException("Réservation non trouvée avec id: " + reservationId));
+        reservation.setStatut(ReservationStatut.ACCEPTEE);
         return reservationRepository.save(reservation);
     }
 
     @Override
     public Reservation declinerReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
-        reservation.setAcceptee(false);
+                .orElseThrow(() -> new ResourceNotFoundException("Réservation non trouvée avec id: " + reservationId));
+        reservation.setStatut(ReservationStatut.REFUSEE);
         return reservationRepository.save(reservation);
     }
 
-    // Suivi des trajets
     @Override
     public Optional<Trajet> suivreTrajetEnTempsReel(Long trajetId) {
-        // Pour le suivi réel : il faudra plus tard intégrer WebSocket ou polling + API de géolocalisation
         return trajetRepository.findById(trajetId);
     }
 
-    //Historique
     @Override
     public List<Trajet> consulterHistoriqueTrajets(Long conducteurId) {
         return trajetRepository.findByConducteurId(conducteurId);

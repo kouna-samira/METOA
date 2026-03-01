@@ -1,6 +1,7 @@
 package com.metoa.service;
 
 import com.metoa.entity.Reservation;
+import com.metoa.exception.ResourceNotFoundException;
 import com.metoa.repository.ReservationRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -22,7 +23,9 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void annulerReservation(Long reservationId) {
-        reservationRepository.deleteById(reservationId);
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Réservation non trouvée"));
+        reservationRepository.delete(reservation);
     }
 
     @Override

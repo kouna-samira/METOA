@@ -1,6 +1,7 @@
 package com.metoa.service;
 
 import com.metoa.entity.Vehicule;
+import com.metoa.exception.ResourceNotFoundException;
 import com.metoa.repository.VehiculeRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -22,12 +23,17 @@ public class VehiculeServiceImpl implements VehiculeService {
 
     @Override
     public Vehicule modifierVehicule(Vehicule vehicule) {
+        if (!vehiculeRepository.existsById(vehicule.getId())) {
+            throw new ResourceNotFoundException("Véhicule non trouvé avec id: " + vehicule.getId());
+        }
         return vehiculeRepository.save(vehicule);
     }
 
     @Override
     public void supprimerVehicule(Long vehiculeId) {
-        vehiculeRepository.deleteById(vehiculeId);
+        Vehicule vehicule = vehiculeRepository.findById(vehiculeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Véhicule non trouvé avec id: " + vehiculeId));
+        vehiculeRepository.delete(vehicule);
     }
 
     @Override
