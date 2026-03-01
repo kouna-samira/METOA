@@ -154,7 +154,17 @@ public class ReservationServiceImpl implements ReservationService{
 
     @Override
     public List<Reservation> getReservationsPourCovoiturage(String idTrajet) {
-        return reservationRepo.findReservationPourCovoiturage(idTrajet, String.valueOf(StatutReservation.CONFIRMEE));
+        System.out.println("Recherche pour le trajet: " + idTrajet);
+
+        List<Reservation> reservations = reservationRepo.findReservationPourCovoiturage(
+                idTrajet,
+                StatutReservation.CONFIRMEE
+        );
+
+        // Ajoutez ce print pour voir le nombre trouvé
+        System.out.println("Réservations trouvées: " + reservations.size());
+
+        return reservations;
     }
 
     private ReservationSuggestionDto buildSuggestionDto( Reservation reservation,List<Trajet> suggestions){

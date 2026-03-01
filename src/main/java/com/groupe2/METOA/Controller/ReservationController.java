@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/reservations")
@@ -60,8 +61,16 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.annulerEtSuggere(id));
     }
     @GetMapping("/covoiturage/{idTrajet}")
-    public ResponseEntity<List<Reservation>> getReservationsPourCovoiturage(@PathVariable String idTrajet) {
+    public ResponseEntity<?> getReservationsPourCovoiturage(@PathVariable String idTrajet) {
         List<Reservation> reservations = reservationService.getReservationsPourCovoiturage(idTrajet);
-        return reservations.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(reservations);
+
+        if (reservations.isEmpty()) {
+            return ResponseEntity.ok(Map.of(
+                    "message", "Aucune réservation confirmée pour l'instant",
+                    "idTrajet", idTrajet
+            ));
+        }
+
+        return ResponseEntity.ok(reservations);
     }
 }
