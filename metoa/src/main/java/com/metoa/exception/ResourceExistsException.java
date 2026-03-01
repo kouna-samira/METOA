@@ -1,4 +1,7 @@
 package com.metoa.exception;
 
-public class ResourceExistsException {
+public class ResourceExistsException extends RuntimeException {
+    public ResourceExistsException(String message) {
+        super(message);
+    }
 }
