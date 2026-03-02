@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.info.Info;
                         url = "https://logonedigital.com"
                 ),
                 title = "METOA",
-                description = "METOA",
+                description = "METOA-COVOITURAGE-GROUPE-2",
                 termsOfService = "&copy; LOGONEDIGITAL",
                 version = "v1"
         )
