@@ -60,23 +60,7 @@ public class ConducteurController {
     @Operation(summary = "Modifier un trajet existant")
     public ResponseEntity<TrajetResDTO> modifierTrajet(@PathVariable Long trajetId,
                                                        @Valid @RequestBody TrajetReqDTO dto) {
-        // Récupérer le trajet existant (pour vérifier)
-        // On pourrait aussi utiliser un mapper
-        Trajet trajet = Trajet.builder()
-                .id(trajetId)
-                .conducteur(Conducteur.builder().id(dto.getConducteurId()).build())
-                .vehicule(Vehicule.builder().id(dto.getVehiculeId()).build())
-                .villeDepart(Ville.builder().id(dto.getVilleDepartId()).build())
-                .villeArrivee(Ville.builder().id(dto.getVilleArriveeId()).build())
-                .dateDepart(dto.getDateDepart())
-                .placesDisponibles(dto.getPlacesDisponibles())
-                .prix(dto.getPrix())
-                .latitudeDepart(dto.getLatitudeDepart())
-                .longitudeDepart(dto.getLongitudeDepart())
-                .latitudeArrivee(dto.getLatitudeArrivee())
-                .longitudeArrivee(dto.getLongitudeArrivee())
-                .build();
-        Trajet updated = conducteurService.modifierTrajet(trajet);
+        Trajet updated = conducteurService.modifierTrajet(trajetId, dto);
         return ResponseEntity.ok(toDto(updated));
     }
 

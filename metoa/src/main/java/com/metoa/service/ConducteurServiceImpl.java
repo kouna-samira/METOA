@@ -1,9 +1,7 @@
 package com.metoa.service;
 
-import com.metoa.entity.Reservation;
-import com.metoa.entity.ReservationStatut;
-import com.metoa.entity.StatutTrajet;
-import com.metoa.entity.Trajet;
+import com.metoa.dto.TrajetReqDTO;
+import com.metoa.entity.*;
 import com.metoa.exception.ResourceNotFoundException;
 import com.metoa.repository.ReservationRepository;
 import com.metoa.repository.TrajetRepository;
@@ -27,7 +25,6 @@ public class ConducteurServiceImpl implements ConducteurService {
 
     @Override
     public Trajet ajouterTrajet(Trajet trajet) {
-        // Le trajet est créé en brouillon par défaut
         trajet.setStatut(StatutTrajet.BROUILLON);
         return trajetRepository.save(trajet);
     }
@@ -36,16 +33,29 @@ public class ConducteurServiceImpl implements ConducteurService {
     public Trajet publierTrajet(Long trajetId) {
         Trajet trajet = trajetRepository.findById(trajetId)
                 .orElseThrow(() -> new ResourceNotFoundException("Trajet non trouvé avec id: " + trajetId));
-        trajet.setPublie(true); // ou trajet.setStatut(StatutTrajet.PUBLIE);
+        trajet.setStatut(StatutTrajet.PUBLIE);
         return trajetRepository.save(trajet);
     }
 
     @Override
-    public Trajet modifierTrajet(Trajet trajet) {
-        // Vérifier que le trajet existe (l'id est fourni)
-        if (!trajetRepository.existsById(trajet.getId())) {
-            throw new ResourceNotFoundException("Trajet non trouvé avec id: " + trajet.getId());
-        }
+    public Trajet modifierTrajet(Long trajetId, TrajetReqDTO dto) {
+        Trajet trajet = trajetRepository.findById(trajetId)
+                .orElseThrow(() -> new ResourceNotFoundException("Trajet non trouvé avec id: " + trajetId));
+
+        // Mise à jour des champs (on suppose que les ID fournis sont valides)
+        trajet.setConducteur(Conducteur.builder().id(dto.getConducteurId()).build());
+        trajet.setVehicule(Vehicule.builder().id(dto.getVehiculeId()).build());
+        trajet.setVilleDepart(Ville.builder().id(dto.getVilleDepartId()).build());
+        trajet.setVilleArrivee(Ville.builder().id(dto.getVilleArriveeId()).build());
+        trajet.setDateDepart(dto.getDateDepart());
+        trajet.setPlacesDisponibles(dto.getPlacesDisponibles());
+        trajet.setPrix(dto.getPrix());
+        trajet.setLatitudeDepart(dto.getLatitudeDepart());
+        trajet.setLongitudeDepart(dto.getLongitudeDepart());
+        trajet.setLatitudeArrivee(dto.getLatitudeArrivee());
+        trajet.setLongitudeArrivee(dto.getLongitudeArrivee());
+
+        // Le statut reste inchangé
         return trajetRepository.save(trajet);
     }
 
