@@ -1,5 +1,6 @@
 package com.metoa.service;
 
+import com.metoa.dto.TrajetReqDTO;
 import com.metoa.entity.Reservation;
 import com.metoa.entity.Trajet;
 import java.util.List;
@@ -7,19 +8,15 @@ import java.util.Optional;
 
 public interface ConducteurService {
 
-    // Gestion des trajets
     Trajet ajouterTrajet(Trajet trajet);
     Trajet publierTrajet(Long trajetId);
-    Trajet modifierTrajet(Trajet trajet);
+    Trajet modifierTrajet(Long trajetId, TrajetReqDTO dto); // Nouvelle signature
     void supprimerTrajet(Long trajetId);
 
-    // Gestion des réservations
     Reservation accepterReservation(Long reservationId);
     Reservation declinerReservation(Long reservationId);
 
-    // Suivi des trajets
     Optional<Trajet> suivreTrajetEnTempsReel(Long trajetId);
 
-    // Historique
     List<Trajet> consulterHistoriqueTrajets(Long conducteurId);
 }
