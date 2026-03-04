@@ -1,28 +1,3 @@
-/*package com.metoa.dto;
-
-import lombok.Data;
-import java.time.LocalDateTime;
-import java.util.List;
-
-@Data
-public class TrajetResDTO {
-    private Long id;
-    private Long conducteurId;
-    private String conducteurNomComplet;
-    private Long vehiculeId;
-    private String vehiculeImmatriculation;
-    private String villeDepart;
-    private String villeArrivee;
-    private LocalDateTime dateDepart;
-    private int placesDisponibles;
-    private double prix;
-    private String statut;
-    private Double latitudeDepart;
-    private Double longitudeDepart;
-    private Double latitudeArrivee;
-    private Double longitudeArrivee;
-    private List<Long> reservationsIds;
-}*/
 package com.metoa.dto;
 
 import com.metoa.entity.StatutTrajet;
@@ -58,10 +33,10 @@ public class TrajetResDTO {
     @Schema(description = "Date et heure de départ", example = "2026-03-15T08:00:00")
     private LocalDateTime dateDepart;
 
-    @Schema(description = "Places disponibles", example = "3")
+    @Schema(description = "Places disponibles", example = "4")
     private int placesDisponibles;
 
-    @Schema(description = "Prix par place (FCFA)", example = "2500")
+    @Schema(description = "Prix par place (FCFA)", example = "2000")
     private double prix;
 
     @Schema(description = "Statut du trajet", allowableValues = {"BROUILLON", "PUBLIE", "TERMINE", "ANNULE"}, example = "PUBLIE")
