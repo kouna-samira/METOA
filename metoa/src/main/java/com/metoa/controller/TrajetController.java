@@ -2,10 +2,7 @@ package com.metoa.controller;
 
 import com.metoa.dto.TrajetReqDTO;
 import com.metoa.dto.TrajetResDTO;
-import com.metoa.entity.Conducteur;
-import com.metoa.entity.Trajet;
-import com.metoa.entity.Vehicule;
-import com.metoa.entity.Ville;
+import com.metoa.entity.*;
 import com.metoa.exception.ResourceNotFoundException;
 import com.metoa.service.TrajetService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,7 +29,6 @@ public class TrajetController {
     @PostMapping
     @Operation(summary = "Créer un nouveau trajet")
     public ResponseEntity<TrajetResDTO> creerTrajet(@Valid @RequestBody TrajetReqDTO dto) {
-        // Conversion DTO → Entité (simplifiée, à améliorer avec MapStruct)
         Trajet trajet = new Trajet();
         trajet.setConducteur(Conducteur.builder().id(dto.getConducteurId()).build());
         trajet.setVehicule(Vehicule.builder().id(dto.getVehiculeId()).build());
@@ -45,8 +41,8 @@ public class TrajetController {
         trajet.setLongitudeDepart(dto.getLongitudeDepart());
         trajet.setLatitudeArrivee(dto.getLatitudeArrivee());
         trajet.setLongitudeArrivee(dto.getLongitudeArrivee());
-        // Par défaut, le statut est BROUILLON (à définir dans le service si besoin)
-        // trajet.setStatut(StatutTrajet.BROUILLON);
+        // Initialisation du statut par défaut (BROUILLON)
+        trajet.setStatut(StatutTrajet.BROUILLON);
 
         Trajet saved = trajetService.creerTrajet(trajet);
         return new ResponseEntity<>(toDto(saved), HttpStatus.CREATED);

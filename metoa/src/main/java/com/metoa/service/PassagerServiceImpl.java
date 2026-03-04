@@ -18,6 +18,7 @@ public class PassagerServiceImpl implements PassagerService {
     private final TrajetRepository trajetRepository;
     private final ReservationRepository reservationRepository;
     private final PassagerRepository passagerRepository;
+    private Double rayonKm;
 
     public PassagerServiceImpl(TrajetRepository trajetRepository,
                                ReservationRepository reservationRepository,
@@ -29,19 +30,32 @@ public class PassagerServiceImpl implements PassagerService {
 
     @Override
     public Reservation creerReservation(Reservation reservation) {
-        // Vérifier que le passager existe
+        // Charger les entités complètes
         Passager passager = passagerRepository.findById(reservation.getPassager().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Passager non trouvé avec id: " + reservation.getPassager().getId()));
-        // Vérifier que le trajet existe et a assez de places
         Trajet trajet = trajetRepository.findById(reservation.getTrajet().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Trajet non trouvé avec id: " + reservation.getTrajet().getId()));
+
+        // Vérifier les places disponibles
         if (trajet.getPlacesDisponibles() < reservation.getPlacesReservees()) {
             throw new RuntimeException("Pas assez de places disponibles pour ce trajet");
         }
-        // Initialiser les champs
-        reservation.setStatut(ReservationStatut.EN_ATTENTE);
-        reservation.setDateReservation(LocalDateTime.now());
-        return reservationRepository.save(reservation);
+
+        // Construire une nouvelle réservation avec les entités complètes
+        Reservation nouvelleReservation = Reservation.builder()
+                .passager(passager)
+                .trajet(trajet)
+                .placesReservees(reservation.getPlacesReservees())
+                .statut(ReservationStatut.EN_ATTENTE)
+                .dateReservation(LocalDateTime.now())
+                .build();
+
+        // Sauvegarder
+        Reservation saved = reservationRepository.save(nouvelleReservation);
+
+        // Recharger avec toutes les associations (grâce à @EntityGraph)
+        return reservationRepository.findById(saved.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Réservation non trouvée après création"));
     }
 
     @Override
@@ -64,7 +78,6 @@ public class PassagerServiceImpl implements PassagerService {
 
     @Override
     public List<Trajet> rechercherTrajets(String villeDepart, String villeArrivee, String dateDepart) {
-        // Simplification : recherche par noms de villes, ignore la date pour l'instant
         return trajetRepository.findByVilleDepartNomAndVilleArriveeNom(villeDepart, villeArrivee);
     }
 
@@ -73,18 +86,19 @@ public class PassagerServiceImpl implements PassagerService {
                                               Double maxDistance, Double latitude, Double longitude) {
         LocalDateTime date = null;
         if (dateDepart != null && !dateDepart.isEmpty()) {
-            date = LocalDateTime.parse(dateDepart); // Attention: gérer les exceptions de parsing
+            date = LocalDateTime.parse(dateDepart);
         }
         return trajetRepository.rechercheMulticritere(villeDepart, villeArrivee, date, latitude, longitude, maxDistance);
     }
 
     @Override
     public List<Trajet> rechercherProximite(Double latitude, Double longitude, Double rayonKm) {
+        this.rayonKm = rayonKm;
         return trajetRepository.findProximite(latitude, longitude, rayonKm);
     }
 
     @Override
     public void alerteDisponibilite(Long trajetId, Long passagerId) {
-        // À implémenter plus tard (envoi de notification)
+        // À implémenter plus tard
     }
 }

@@ -48,4 +48,9 @@ public interface TrajetRepository extends JpaRepository<Trajet, Long> {
     List<Trajet> findProximite(@Param("lat") Double latitude,
                                @Param("lng") Double longitude,
                                @Param("rayon") Double rayonKm);
+
+
+
+    // Nouvelle méthode pour vérifier si un véhicule est utilisé dans des trajets
+    boolean existsByVehiculeId(Long vehiculeId);
 }
