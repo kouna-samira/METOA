@@ -3,6 +3,8 @@ package com.groupe2.METOA.gestionProfilUtiisateur.entity.user;
 
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.Role;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.historiqueTrajet.HistoriqueTrajet;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.ProfileConducteur;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.ProfilePassager;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,7 +44,7 @@ public class User {
     private String lieuNaissance;
 
     @Column(nullable = false)
-    private String sexe;
+    private Sexes sexe;
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -79,5 +81,8 @@ public class User {
     private List<HistoriqueTrajet> historiquesTrajets;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Profil profil;
+    private ProfileConducteur profileConducteur;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private ProfilePassager profilePassager;
 }
