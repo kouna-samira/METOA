@@ -1,7 +1,5 @@
 package com.groupe2.METOA.gestionProfilUtiisateur.controller;
 
-import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.ProfilReqDTO;
-import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.ProfilResDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.service.profil.ProfilService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

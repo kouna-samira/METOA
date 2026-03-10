@@ -1,8 +1,6 @@
 package com.groupe2.METOA.gestionProfilUtiisateur.classMapp;
 
 
-import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.ProfilReqDTO;
-import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.ProfilResDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

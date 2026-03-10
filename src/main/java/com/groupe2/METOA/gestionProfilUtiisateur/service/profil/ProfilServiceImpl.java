@@ -2,8 +2,6 @@ package com.groupe2.METOA.gestionProfilUtiisateur.service.profil;
 
 
 import com.groupe2.METOA.gestionProfilUtiisateur.classMapp.ProfilMapper;
-import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.ProfilReqDTO;
-import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.ProfilResDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.User;
 import com.groupe2.METOA.gestionProfilUtiisateur.exception.ProfilNotFoundException;
 import com.groupe2.METOA.gestionProfilUtiisateur.exception.UserNoteFoundException;

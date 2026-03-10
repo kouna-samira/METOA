@@ -1,7 +1,6 @@
 package com.groupe2.METOA.gestionProfilUtiisateur.dto.userDTO;
 
 
-import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.ProfilReqDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.Role;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.StatusUser;
 import io.swagger.v3.oas.annotations.media.Schema;
