@@ -3,7 +3,6 @@ package com.groupe2.METOA.gestionProfilUtiisateur.entity.user;
 
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.Role;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.historiqueTrajet.HistoriqueTrajet;
-import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.Profil;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

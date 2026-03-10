@@ -5,7 +5,6 @@ import com.groupe2.METOA.gestionProfilUtiisateur.classMapp.ProfilMapper;
 import com.groupe2.METOA.gestionProfilUtiisateur.classMapp.UserMapper;
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.userDTO.UserReqDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.userDTO.UserResDTO;
-import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.Profil;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.StatusUser;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.User;
 import com.groupe2.METOA.gestionProfilUtiisateur.exception.UserNoteFoundException;
