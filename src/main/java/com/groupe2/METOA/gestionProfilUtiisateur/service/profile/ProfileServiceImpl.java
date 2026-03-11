@@ -143,7 +143,6 @@ public class ProfileServiceImpl implements ProfileService {
         profileRepo.save(profile);
     }
 
-    // --- Méthode utilitaire ---
     private void deleteLocalFile(String fileUrl) {
         if (fileUrl == null) return;
         try {
