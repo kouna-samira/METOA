@@ -1,8 +1,8 @@
 package com.groupe2.METOA.gestionProfilUtiisateur.service.profileConducteur;
 
-import com.groupe2.METOA.gestionProfileUtilisateur.dto.profilDTO.profileConducteur.ProfileConducteurReqDTO;
-import com.groupe2.METOA.gestionProfileUtilisateur.dto.profilDTO.profileConducteur.ProfileConducteurResDTO;
-import com.groupe2.METOA.gestionProfileUtilisateur.entity.profil.TyperDocument;
+import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profileConducteur.ProfileConducteurReqDTO;
+import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profileConducteur.ProfileConducteurResDTO;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.TyperDocument;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ProfileConducteurService {
