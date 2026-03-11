@@ -6,6 +6,7 @@ import com.groupe2.METOA.gestionProfilUtiisateur.dto.userDTO.UserReqDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.userDTO.UserResDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.userDTO.UserSearchDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.User;
+import com.groupe2.METOA.gestionProfilUtiisateur.exception.UserAlreadyExisteException;
 import com.groupe2.METOA.gestionProfilUtiisateur.exception.UserNoteFoundException;
 import com.groupe2.METOA.gestionProfilUtiisateur.repository.UserRepo;
 import org.springframework.data.domain.Page;
@@ -36,12 +37,9 @@ public class UserServiceImpl implements UserService {
     public UserResDTO createUser(UserReqDTO dto) {
 
         if (userRepo.existsByEmail(dto.getEmail())) {
-            throw new RuntimeException("Email déjà utilisé");
+            throw new UserAlreadyExisteException("Email déjà utilisé");
         }
 
-        if (userRepo.existsByUserName(dto.getUserName())) {
-            throw new RuntimeException("Username déjà utilisé");
-        }
 
         User user = userMapper.toEntity(dto);
 
@@ -102,7 +100,7 @@ public class UserServiceImpl implements UserService {
     public UserResDTO getUserByEmail(String email) {
 
         User user = userRepo.findByEmailIgnoreCase(email)
-                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+                .orElseThrow(() -> new UserNoteFoundException("Utilisateur introuvable"));
 
         return userMapper.toDto(user);
     }

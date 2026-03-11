@@ -26,5 +26,4 @@ public class UserResDTO {
     @Schema(description = "Rôle de l'utilisateur")
     private Role role;
     private StatusUser statusUser;
-    private ProfilReqDTO profil;
 }

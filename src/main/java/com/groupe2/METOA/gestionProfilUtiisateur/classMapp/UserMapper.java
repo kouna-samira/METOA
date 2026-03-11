@@ -7,10 +7,9 @@ import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.User;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring", uses = {ProfilMapper.class})
+@Mapper(componentModel = "spring", uses = {ProfileMapper.class})
 public interface UserMapper {
     User toEntity(UserReqDTO dto);
-    @Mapping(target = "passe", ignore = true)
 
     UserResDTO toDto(User entity);
 
