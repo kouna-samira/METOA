@@ -23,7 +23,15 @@ import java.util.List;
 @Builder
 @Slf4j
 @Entity
-@Table(name = "users")
+@Table(
+        name = "users",
+        indexes = {
+                @Index(name = "idx_user_nom", columnList = "nom"),
+                @Index(name = "idx_user_prenom", columnList = "prenom"),
+                @Index(name = "idx_user_email", columnList = "email"),
+                @Index(name = "idx_user_ville", columnList = "ville")
+        }
+)
 public class User {
 
 
