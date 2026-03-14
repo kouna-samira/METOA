@@ -74,9 +74,9 @@ public class ProfileServiceImpl implements ProfileService {
 
 
     @Override
-    public ProfileResDTO updateProfileByUserId(String userId, ProfileReqDTO dto) {
-        Profile profile = profileRepo.findByUser_IdUser(userId)
-                .orElseThrow(() -> new ProfilNotFoundException("Profil introuvable"));
+    public ProfileResDTO updateProfileByUserId( ProfileReqDTO dto) {
+        Profile profile = profileRepo.findByUser_IdUser(dto.getUserId())
+                .orElseThrow(() -> new UserNoteFoundException("Profil introuvable"));
 
         profileMapper.updateEntityFromDto(dto, profile);
         profile.setDateModificationProfile(LocalDate.now());

@@ -1,14 +1,15 @@
 package com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.service;
 
-import com.groupe2.METOA.gestionProfileUtilisateur.entity.note_avis.dto.AvisReqDTO;
-import com.groupe2.METOA.gestionProfileUtilisateur.entity.note_avis.dto.AvisResDTO;
-import com.groupe2.METOA.gestionProfileUtilisateur.entity.note_avis.dto.StatistiqueAvisDTO;
-import com.groupe2.METOA.gestionProfileUtilisateur.entity.note_avis.entity.Avis;
-import com.groupe2.METOA.gestionProfileUtilisateur.entity.note_avis.entity.Badge;
-import com.groupe2.METOA.gestionProfileUtilisateur.entity.note_avis.repo.AvisRepo;
-import com.groupe2.METOA.gestionProfileUtilisateur.repository.ProfileRepo;
-import com.groupe2.METOA.gestionProfileUtilisateur.service.TrajetService;
-import com.groupe2.METOA.gestionProfileUtilisateur.service.profile.ProfileService;
+
+import com.groupe2.METOA.Service.Trajet.TrajetService;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.dto.AvisReqDTO;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.dto.AvisResDTO;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.dto.StatistiqueAvisDTO;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.entity.Avis;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.entity.Badge;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.repo.AvisRepo;
+import com.groupe2.METOA.gestionProfilUtiisateur.repository.ProfileConducteurRepo;
+import com.groupe2.METOA.gestionProfilUtiisateur.repository.ProfileRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,11 +22,12 @@ public class AvisServiceImpl implements AvisService {
 
     private final AvisRepo avisRepo;
     private final TrajetService trajetService;
-    private final ProfileRepo profileRepo;
+    private final ProfileConducteurRepo profileRepo;
 
-    public AvisServiceImpl(AvisRepo avisRepo, TrajetService trajetService, ProfileRepo profileRepo) {
+    public AvisServiceImpl(AvisRepo avisRepo, TrajetService trajetService, ProfileConducteurRepo profileRepo) {
         this.avisRepo = avisRepo;
         this.trajetService = trajetService;
+
         this.profileRepo = profileRepo;
     }
 

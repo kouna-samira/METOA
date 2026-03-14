@@ -1,6 +1,7 @@
 package com.groupe2.METOA.gestionProfilUtiisateur.entity.profil;
 
 
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.entity.Badge;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,9 @@ public class ProfileConducteur {
     private String adresse;
 
 
+    private double noteMoyenne;
+    private Integer totalAvis;
+    private Badge badge;
 
     private String photoUrl;
 

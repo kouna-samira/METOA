@@ -1,15 +1,18 @@
 package com.groupe2.METOA.gestionProfilUtiisateur.service.profileConducteur;
 
-import com.groupe2.METOA.gestionProfileUtilisateur.classMapp.ProfileConducteurMapper;
-import com.groupe2.METOA.gestionProfileUtilisateur.dto.profilDTO.profileConducteur.ProfileConducteurReqDTO;
-import com.groupe2.METOA.gestionProfileUtilisateur.dto.profilDTO.profileConducteur.ProfileConducteurResDTO;
-import com.groupe2.METOA.gestionProfileUtilisateur.entity.profil.ProfileConducteur;
-import com.groupe2.METOA.gestionProfileUtilisateur.entity.profil.TyperDocument;
-import com.groupe2.METOA.gestionProfileUtilisateur.entity.user.User;
-import com.groupe2.METOA.gestionProfileUtilisateur.exception.ProfilNotFoundException;
-import com.groupe2.METOA.gestionProfileUtilisateur.exception.UserNoteFoundException;
-import com.groupe2.METOA.gestionProfileUtilisateur.repository.ProfileConducteurRepo;
-import com.groupe2.METOA.gestionProfileUtilisateur.repository.UserRepo;
+import com.groupe2.METOA.gestionProfilUtiisateur.classMapp.ProfileConducteurMapper;
+import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profileConducteur.ProfileConducteurReqDTO;
+import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profileConducteur.ProfileConducteurResDTO;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.entity.Badge;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.ProfileConducteur;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.TyperDocument;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.User;
+import com.groupe2.METOA.gestionProfilUtiisateur.exception.NullableFillException;
+import com.groupe2.METOA.gestionProfilUtiisateur.exception.ProfilNotFoundException;
+import com.groupe2.METOA.gestionProfilUtiisateur.exception.ProfileAlreadyExistException;
+import com.groupe2.METOA.gestionProfilUtiisateur.exception.UserNoteFoundException;
+import com.groupe2.METOA.gestionProfilUtiisateur.repository.ProfileConducteurRepo;
+import com.groupe2.METOA.gestionProfilUtiisateur.repository.UserRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -38,81 +42,100 @@ public class ProfileConducteurServiceImpl implements ProfileConducteurService {
 
 
     @Override
-    public ProfileConducteurResDTO createOrUpdateProfile(ProfileConducteurReqDTO dto) {
+    public ProfileConducteurResDTO createProfile( ProfileConducteurReqDTO dto) {
 
-        User user = userRepo.findById(dto.getUserId())
-                .orElseThrow(() -> new UserNoteFoundException(dto.getUserId()));
-
-        Optional<ProfileConducteur> optionalProfile =
-                profileConducteurRepo.findByUser_IdUser(dto.getUserId());
-
-        ProfileConducteur profile;
-        if (optionalProfile.isPresent()) {
-            profile = optionalProfile.get();
-            profile.setAdresse(dto.getAdresse());
-            profile.setBio(dto.getBio());
-            profile.setVehicule(dto.getVehicule());
-            profile.setPreferences(dto.getPreferences());
-            profile.setDateModificationProfile(LocalDate.now());
-        } else {
-            profile = new ProfileConducteur();
-            profile.setUser(user);
-            profile.setAdresse(dto.getAdresse());
-            profile.setBio(dto.getBio());
-            profile.setVehicule(dto.getVehicule());
-            profile.setPreferences(dto.getPreferences());
-            profile.setDateCreationProfile(LocalDate.now());
-            profile.setDateModificationProfile(LocalDate.now());
+        if(profileConducteurRepo.existsByUserIdUser(dto.getUserId())){
+            throw new ProfileAlreadyExistException("Profil conducteur déjà existant");
         }
 
+        User user = userRepo.findById(dto.getUserId())
+                .orElseThrow(() -> new UserNoteFoundException("Utilisateur introuvable"));
 
-        profileConducteurRepo.save(profile);
-        return profileConducteurMapper.toDto(profile);
+        ProfileConducteur profile = profileConducteurMapper.toEntity(dto);
+
+        profile.setUser(user);
+        profile.setActif(true);
+        profile.setNombreTrajetsEffectues(0);
+        profile.setNoteMoyenne(0);
+        profile.setBadge(Badge.NOUVEAU);
+        profile.setDateCreationProfile(LocalDate.now());
+
+        return profileConducteurMapper.toDto(profileConducteurRepo.save(profile));
+    }
+
+    @Override
+    public ProfileConducteurResDTO updateProfile( ProfileConducteurReqDTO dto) {
+
+        ProfileConducteur profile = profileConducteurRepo.findByUserIdUser(dto.getUserId())
+                .orElseThrow(() -> new ProfilNotFoundException(" conducteur introuvable"));
+
+        profileConducteurMapper.updateEntityFromDto(dto,profile);
+
+        profile.setDateModificationProfile(LocalDate.now());
+        profile.setBadge(calculerBadge(profile));
+
+        return profileConducteurMapper.toDto(profileConducteurRepo.save(profile));
     }
 
     @Override
     public ProfileConducteurResDTO getProfileByUserId(String userId) {
-        ProfileConducteur profile = profileConducteurRepo.findByUser_IdUser(userId)
-                .orElseThrow(() -> new ProfilNotFoundException("Profil introuvable"));
+
+        ProfileConducteur profile = profileConducteurRepo.findByUserIdUser(userId)
+                .orElseThrow(() -> new ProfilNotFoundException("conducteur introuvable"));
+
         return profileConducteurMapper.toDto(profile);
     }
 
     @Override
-    public ProfileConducteurResDTO updateProfileByUserId(String userId,
-                                                         ProfileConducteurReqDTO dto,
-                                                         MultipartFile photo) {
-        ProfileConducteur profile = profileConducteurRepo.findByUser_IdUser(userId)
-                .orElseThrow(() -> new ProfilNotFoundException("Profil introuvable"));
+    public List<ProfileConducteurResDTO> getAllProfiles() {
 
-        profileConducteurMapper.updateEntityFromDto(dto, profile);
-        profile.setDateModificationProfile(LocalDate.now());
-
-        ProfileConducteur savedProfile = profileConducteurRepo.save(profile);
-
-        if (photo != null && !photo.isEmpty()) {
-            uploadPhotoByUserId(userId, photo);
-        }
-
-        return profileConducteurMapper.toDto(savedProfile);
+        return profileConducteurRepo.findAll()
+                .stream()
+                .map(profileConducteurMapper::toDto)
+                .toList();
     }
 
     @Override
-    public void deleteProfileByUserId(String userId) {
-        ProfileConducteur profile = profileConducteurRepo.findByUser_IdUser(userId)
-                .orElseThrow(() -> new ProfilNotFoundException("Profil introuvable"));
+    public List<ProfileConducteurResDTO> getDriversByBadge(Badge badge) {
 
-        deletePhotoByUserId(userId);
+        return profileConducteurRepo.findByBadge(badge)
+                .stream()
+                .map(profileConducteurMapper::toDto)
+                .toList();
+    }
 
+    @Override
+    public void deleteProfile(String userId) {
+
+        ProfileConducteur profile = profileConducteurRepo.findByUserIdUser(userId)
+                .orElseThrow(() -> new ProfilNotFoundException("conducteur introuvable"));
 
         profileConducteurRepo.delete(profile);
     }
 
+    private Badge calculerBadge(ProfileConducteur profile){
+
+        double note = profile.getNoteMoyenne();
+        int trajets = profile.getNombreTrajetsEffectues();
+
+        if(note >= 4.8 && trajets >= 50)
+            return Badge.SUPER_CONDUCTEUR;
+
+        if(note >= 4 && trajets >= 10)
+            return Badge.CONDUCTEUR_FIABLE;
+
+        if(note < 3)
+            return Badge.A_RISQUE;
+
+        return Badge.NOUVEAU;
+    }
+
     @Override
     public String uploadPhotoByUserId(String userId, MultipartFile file) {
-        if (file == null || file.isEmpty()) throw new RuntimeException("Fichier vide ou nul");
+        if (file == null || file.isEmpty()) throw new NullableFillException("Fichier vide ou nul");
 
         try {
-            ProfileConducteur profile = profileConducteurRepo.findByUser_IdUser(userId)
+            ProfileConducteur profile = profileConducteurRepo.findByUserIdUser(userId)
                     .orElseThrow(() -> new ProfilNotFoundException("Profil introuvable"));
 
             if (!Files.exists(uploadDir)) Files.createDirectories(uploadDir);
@@ -137,14 +160,14 @@ public class ProfileConducteurServiceImpl implements ProfileConducteurService {
 
     @Override
     public String getPhotoByUserId(String userId) {
-        ProfileConducteur profile = profileConducteurRepo.findByUser_IdUser(userId)
+        ProfileConducteur profile = profileConducteurRepo.findByUserIdUser(userId)
                 .orElseThrow(() -> new ProfilNotFoundException("Profil introuvable"));
         return profile.getPhotoUrl();
     }
 
     @Override
     public void deletePhotoByUserId(String userId) {
-        ProfileConducteur profile = profileConducteurRepo.findByUser_IdUser(userId)
+        ProfileConducteur profile = profileConducteurRepo.findByUserIdUser(userId)
                 .orElseThrow(() -> new ProfilNotFoundException("Profil introuvable"));
 
         deleteLocalFile(profile.getPhotoUrl());
@@ -154,10 +177,10 @@ public class ProfileConducteurServiceImpl implements ProfileConducteurService {
 
     @Override
     public String uploadDocument(String userId, MultipartFile file, TyperDocument typerDocument) {
-        if (file == null || file.isEmpty()) throw new RuntimeException("Fichier vide ou nul");
+        if (file == null || file.isEmpty()) throw new NullableFillException("Fichier vide ou nul");
 
         try {
-            ProfileConducteur profile = profileConducteurRepo.findByUser_IdUser(userId)
+            ProfileConducteur profile = profileConducteurRepo.findByUserIdUser(userId)
                     .orElseThrow(() -> new ProfilNotFoundException("Profil introuvable"));
 
             if (!Files.exists(uploadDir)) Files.createDirectories(uploadDir);
@@ -184,10 +207,10 @@ public class ProfileConducteurServiceImpl implements ProfileConducteurService {
 
     @Override
     public String downloadDocument(String userId) {
-        ProfileConducteur profile = profileConducteurRepo.findByUser_IdUser(userId)
+        ProfileConducteur profile = profileConducteurRepo.findByUserIdUser(userId)
                 .orElseThrow(() -> new ProfilNotFoundException("Profil introuvable"));
 
-        if (profile.getDocumentUrl() == null) throw new ProfilNotFoundException("Aucun document disponible");
+        if (profile.getDocumentUrl() == null) throw new NullableFillException("Aucun document disponible");
 
         return profile.getDocumentUrl();
     }
@@ -199,7 +222,7 @@ public class ProfileConducteurServiceImpl implements ProfileConducteurService {
 
     @Override
     public void deleteDocument(String userId) {
-        ProfileConducteur profile = profileConducteurRepo.findByUser_IdUser(userId)
+        ProfileConducteur profile = profileConducteurRepo.findByUserIdUser(userId)
                 .orElseThrow(() -> new ProfilNotFoundException("Profil introuvable"));
 
         deleteLocalFile(profile.getDocumentUrl());

@@ -1,9 +1,8 @@
 package com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.service;
 
-import com.groupe2.METOA.gestionProfileUtilisateur.entity.note_avis.dto.AvisReqDTO;
-import com.groupe2.METOA.gestionProfileUtilisateur.entity.note_avis.dto.AvisResDTO;
-import com.groupe2.METOA.gestionProfileUtilisateur.entity.note_avis.dto.StatistiqueAvisDTO;
-import com.groupe2.METOA.gestionProfileUtilisateur.entity.note_avis.entity.Badge;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.dto.AvisReqDTO;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.dto.AvisResDTO;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.dto.StatistiqueAvisDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

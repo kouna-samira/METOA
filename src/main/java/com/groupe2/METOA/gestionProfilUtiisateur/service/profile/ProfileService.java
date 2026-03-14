@@ -14,7 +14,7 @@ public interface ProfileService {
 
     List<ProfileResDTO> getAllProfiles();
 
-    ProfileResDTO updateProfileByUserId(String userId, ProfileReqDTO dto);
+    ProfileResDTO updateProfileByUserId( ProfileReqDTO dto);
 
     void deleteProfileByUserId(String userId);
 

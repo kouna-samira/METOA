@@ -2,18 +2,25 @@ package com.groupe2.METOA.gestionProfilUtiisateur.service.profileConducteur;
 
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profileConducteur.ProfileConducteurReqDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profileConducteur.ProfileConducteurResDTO;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.entity.Badge;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.TyperDocument;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface ProfileConducteurService {
 
-    ProfileConducteurResDTO createOrUpdateProfile(ProfileConducteurReqDTO dto) throws Exception;
+    ProfileConducteurResDTO createProfile(ProfileConducteurReqDTO dto);
+
+    ProfileConducteurResDTO updateProfile( ProfileConducteurReqDTO dto);
 
     ProfileConducteurResDTO getProfileByUserId(String userId);
 
-    ProfileConducteurResDTO updateProfileByUserId(String userId, ProfileConducteurReqDTO dto, MultipartFile file);
+    List<ProfileConducteurResDTO> getAllProfiles();
 
-    void deleteProfileByUserId(String userId);
+    List<ProfileConducteurResDTO> getDriversByBadge(Badge badge);
+
+    void deleteProfile(String userId);
 
     String uploadPhotoByUserId(String userId, MultipartFile file);
 
@@ -26,6 +33,7 @@ public interface ProfileConducteurService {
     String downloadDocument(String userId);
 
     String viewDocument(String profileId) ;
+
     void deleteDocument(String userId);
 
 }
