@@ -4,6 +4,8 @@ import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profileStandard.P
 import com.groupe2.METOA.gestionProfilUtiisateur.service.profile.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,7 +33,7 @@ import java.util.List;
             @RequestBody ProfileReqDTO dto) {
         dto.setUserId(userId);
         this.profileService.createProfile(dto);
-        return ResponseEntity.status(200).body(" create profile successfully");
+        return ResponseEntity.status(201).body(" create profile successfully");
     }
 
     @PutMapping
@@ -51,9 +53,9 @@ import java.util.List;
 
     @Operation(summary = "Afficher tous les profiles standard")
     @GetMapping
-    public ResponseEntity<List<ProfileResDTO>> getAllUsers() {
+    public ResponseEntity<Page<ProfileResDTO>> getAllUsers(Pageable pageable) {
 
-        return ResponseEntity.status(200).body(profileService.getAllProfiles());
+        return ResponseEntity.status(200).body(profileService.getAllProfiles(pageable));
     }
 
 

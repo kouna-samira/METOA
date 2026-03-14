@@ -3,12 +3,16 @@ package com.groupe2.METOA.gestionProfilUtiisateur.service.profiePassager;
 import com.groupe2.METOA.gestionProfilUtiisateur.classMapp.ProfilePassagerMapper;
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profilePassager.ProfilePassagerReqDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profilePassager.ProfilePassagerResDTO;
+import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profileStandard.ProfileResDTO;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.Profile;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.ProfilePassager;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.User;
 import com.groupe2.METOA.gestionProfilUtiisateur.exception.ProfilNotFoundException;
 import com.groupe2.METOA.gestionProfilUtiisateur.exception.UserNoteFoundException;
 import com.groupe2.METOA.gestionProfilUtiisateur.repository.ProfilePassagerRepo;
 import com.groupe2.METOA.gestionProfilUtiisateur.repository.UserRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -71,6 +75,14 @@ public class ProfilePassagerServiceImpl implements ProfilePassagerService {
         ProfilePassager profile = profilePassagerRepo.findByUser_IdUser(userId)
                 .orElseThrow(() -> new ProfilNotFoundException("Profil introuvable"));
         return profilePassagerMapper.toDto(profile);
+    }
+
+    @Override
+    public Page<ProfilePassagerResDTO> getAllPassage(Pageable pageable) {
+
+        Page<ProfilePassager> profiles = profilePassagerRepo.findAll(pageable);
+
+        return profiles.map(profilePassagerMapper::toDto);
     }
 
     @Override

@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,11 +61,11 @@ public class ProfileConducteurController {
 
     @Operation(summary = "affcher tous les conducteurs")
     @GetMapping
-    public ResponseEntity<List<ProfileConducteurResDTO>> getAllProfiles(){
-        return ResponseEntity.status(200).body(profileConducteurService.getAllProfiles());
+    public ResponseEntity<Page<ProfileConducteurResDTO>> getAllProfiles(Pageable pageable){
+        return ResponseEntity.status(200).body(profileConducteurService.getAllProfiles(pageable));
     }
 
-    @Operation(summary = "affcher un conducteur par son badge")
+    @Operation(summary = "affcher les conducteur par badge")
     @GetMapping("/badge/{badge}")
     public ResponseEntity<List<ProfileConducteurResDTO>> getDriversByBadge(@PathVariable Badge badge){
         return ResponseEntity.status(200).body(profileConducteurService.getDriversByBadge(badge));

@@ -4,6 +4,7 @@ import com.groupe2.METOA.gestionProfilUtiisateur.classMapp.ProfileConducteurMapp
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profileConducteur.ProfileConducteurReqDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profileConducteur.ProfileConducteurResDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.entity.Badge;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.Profile;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.ProfileConducteur;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.TyperDocument;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.User;
@@ -13,6 +14,8 @@ import com.groupe2.METOA.gestionProfilUtiisateur.exception.ProfileAlreadyExistEx
 import com.groupe2.METOA.gestionProfilUtiisateur.exception.UserNoteFoundException;
 import com.groupe2.METOA.gestionProfilUtiisateur.repository.ProfileConducteurRepo;
 import com.groupe2.METOA.gestionProfilUtiisateur.repository.UserRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -87,12 +90,9 @@ public class ProfileConducteurServiceImpl implements ProfileConducteurService {
     }
 
     @Override
-    public List<ProfileConducteurResDTO> getAllProfiles() {
-
-        return profileConducteurRepo.findAll()
-                .stream()
-                .map(profileConducteurMapper::toDto)
-                .toList();
+    public Page<ProfileConducteurResDTO> getAllProfiles(Pageable pageable) {
+        Page<ProfileConducteur> profiles = profileConducteurRepo.findAll(pageable);
+        return profiles.map(profileConducteurMapper::toDto) ;
     }
 
     @Override

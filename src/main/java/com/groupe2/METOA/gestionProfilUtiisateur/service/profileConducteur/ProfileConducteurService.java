@@ -4,6 +4,8 @@ import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profileConducteur
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profileConducteur.ProfileConducteurResDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.entity.Badge;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.TyperDocument;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -16,7 +18,7 @@ public interface ProfileConducteurService {
 
     ProfileConducteurResDTO getProfileByUserId(String userId);
 
-    List<ProfileConducteurResDTO> getAllProfiles();
+    Page<ProfileConducteurResDTO> getAllProfiles(Pageable pageable);
 
     List<ProfileConducteurResDTO> getDriversByBadge(Badge badge);
 
