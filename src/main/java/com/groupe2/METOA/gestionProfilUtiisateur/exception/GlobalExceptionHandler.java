@@ -24,6 +24,12 @@ public class GlobalExceptionHandler extends RuntimeException {
         ));
     }
 
+    @ExceptionHandler(ProfileAlreadyExistException.class)
+    public ResponseEntity<ErrorMessage> handleProfileAlreadyExistException(ProfileAlreadyExistException ex) {
+        return  ResponseEntity.status(404).body(new ErrorMessage(ex.getMessage()
+        ));
+    }
+
     @ExceptionHandler(InvaidUserDataException.class)
     public ResponseEntity<?> handleInvalidData(InvaidUserDataException ex) {
         return  ResponseEntity.status(404).body(new ErrorMessage(ex.getMessage()
@@ -37,6 +43,11 @@ public class GlobalExceptionHandler extends RuntimeException {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<String> handleAccessDenied(AccessDeniedException ex) {
+        return ResponseEntity.status(403).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(NullableFillException.class)
+    public ResponseEntity<String> handleNullableFillException(NullableFillException ex) {
         return ResponseEntity.status(403).body(ex.getMessage());
     }
 

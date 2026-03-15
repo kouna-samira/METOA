@@ -143,7 +143,7 @@ public class ReservationServiceImpl implements ReservationService{
                 })
                 .collect(Collectors.toList());
 
-        // 5. Retourner le DTO avec les suggestions
+        // Retourner le DTO avec les suggestions
         ReservationSuggestionDto result = new ReservationSuggestionDto();
         result.setIdReservation(idReservation);
         result.setMessage("Votre réservation a été annulée. Voici des alternatives disponibles.");
