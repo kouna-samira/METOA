@@ -9,14 +9,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
-
-
-@Tag(name = "Profile Standard", description = "Gestion du profil utilisateur standard")
-    @RestController
-    @RequestMapping("api/v1/users/{userId}/profile")
-    public class ProfileController {
+@Tag(name = "Profile Standard", description = "Gestion des utilisateurs standards")
+@RestController
+@RequestMapping("/api/v1/users/{userId}/profile")
+public class ProfileController {
 
     private final ProfileService profileService;
 
@@ -24,77 +20,98 @@ import java.util.List;
         this.profileService = service;
     }
 
-
-
-    @Operation(summary = "Créer  un profile standard")
+    // CREATE
+    @Operation(summary = "Créer un profil standard")
     @PostMapping
     public ResponseEntity<String> createProfile(
             @PathVariable String userId,
             @RequestBody ProfileReqDTO dto) {
+
         dto.setUserId(userId);
-        this.profileService.createProfile(dto);
-        return ResponseEntity.status(201).body(" create profile successfully");
+        profileService.createProfile(dto);
+
+        return ResponseEntity.status(201)
+                .body("Profile créé avec succès");
     }
 
+    // UPDATE
+    @Operation(summary = "Modifier profil standard")
     @PutMapping
     public ResponseEntity<String> updateProfile(
             @PathVariable String userId,
             @RequestBody ProfileReqDTO dto) {
+
         dto.setUserId(userId);
-        this.profileService.updateProfileByUserId(dto);
-        return ResponseEntity.status(200).body(" update profile successfully");
+        profileService.updateProfileByUserId(dto);
+
+        return ResponseEntity.ok("Profile modifié avec succès");
     }
 
-    @Operation(summary = "Afficher un profile standard")
+    // GET ONE
+    @Operation(summary = "Afficher un profil standard")
     @GetMapping
-    public ResponseEntity<ProfileResDTO> getProfile(@PathVariable String userId) {
-        return ResponseEntity.status(200).body(profileService.getProfileByUserId(userId));
+    public ResponseEntity<ProfileResDTO> getProfile(
+            @PathVariable String userId) {
+
+        return ResponseEntity.ok(
+                profileService.getProfileByUserId(userId)
+        );
     }
 
-    @Operation(summary = "Afficher tous les profiles standard")
-    @GetMapping
-    public ResponseEntity<Page<ProfileResDTO>> getAllUsers(Pageable pageable) {
+    // GET ALL PROFILES
+    @Operation(summary = "Afficher tous les profils standard")
+    @GetMapping("/all")
+    public ResponseEntity<Page<ProfileResDTO>> getAllProfiles(
+            Pageable pageable) {
 
-        return ResponseEntity.status(200).body(profileService.getAllProfiles(pageable));
+        return ResponseEntity.ok(
+                profileService.getAllProfiles(pageable)
+        );
     }
 
-
-    @Operation(summary = "Supprimer le profil standard")
+    // DELETE
+    @Operation(summary = "Supprimer profil standard")
     @DeleteMapping
-    public ResponseEntity<String> deleteProfile(@PathVariable String userId) {
+    public ResponseEntity<String> deleteProfile(
+            @PathVariable String userId) {
+
         profileService.deleteProfileByUserId(userId);
-        return ResponseEntity.status(202).body("delete profile successfully");
+
+        return ResponseEntity.ok("Profile supprimé");
     }
 
-
-    @Operation(summary = "Uploader ou modifier la photo")
-    @PostMapping(value = "/photo",consumes = "multipart/form-data")
+    // UPLOAD PHOTO
+    @Operation(summary = "Uploader ou modifier photo")
+    @PostMapping(value = "/photo", consumes = "multipart/form-data")
     public ResponseEntity<String> uploadPhoto(
             @PathVariable String userId,
             @RequestPart("file") MultipartFile file) {
 
         return ResponseEntity.ok(
-                profileService.uploadPhotoByUserId(userId, file)
+                profileService.uploadPhotoByUserId(userId,file)
         );
     }
 
-
+    // GET PHOTO
     @Operation(summary = "Afficher la photo")
-    @GetMapping(value = "/photo",consumes = "multipart/form-data")
-    public ResponseEntity<String> getPhoto(@PathVariable String userId) {
+    @GetMapping("/photo")
+    public ResponseEntity<String> getPhoto(
+            @PathVariable String userId) {
+
         return ResponseEntity.ok(
                 profileService.getPhotoByUserId(userId)
         );
     }
 
-
+    // DELETE PHOTO
     @Operation(summary = "Supprimer la photo")
-    @DeleteMapping(value = "/photo",consumes = "multipart/form-data")
-    public ResponseEntity<String> deletePhoto(@PathVariable String userId) {
+    @DeleteMapping("/photo")
+    public ResponseEntity<String> deletePhoto(
+            @PathVariable String userId) {
+
         profileService.deletePhotoByUserId(userId);
-        return ResponseEntity.status(201).body("delete picture successfully");
+
+        return ResponseEntity.ok("Photo supprimée");
     }
 
-    }
-
-
+}

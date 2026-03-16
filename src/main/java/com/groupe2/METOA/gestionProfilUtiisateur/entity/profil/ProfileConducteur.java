@@ -45,6 +45,7 @@ public class ProfileConducteur {
 
     private Boolean actif;
 
+
     private Integer nombreTrajetsEffectues;
 
     private String vehicule;
@@ -52,7 +53,7 @@ public class ProfileConducteur {
     private String documentName;
 
 
-    private double noteMoyenne;
+
     private int nombreAvis;
 
     @Enumerated(EnumType.STRING)

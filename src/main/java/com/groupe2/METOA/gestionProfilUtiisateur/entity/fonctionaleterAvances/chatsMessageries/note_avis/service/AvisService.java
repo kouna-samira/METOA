@@ -6,15 +6,17 @@ import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.ch
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface AvisService {
 
-    AvisResDTO donnerAvis(String auteurId, AvisReqDTO dto);
+    AvisResDTO createAvis(AvisReqDTO dto);
 
-    AvisResDTO modifierAvis(String avisId, double note, String commentaire);
+    List<AvisResDTO> getAvisPublicByUser(String userId);
 
-    Page<AvisResDTO> getAvisUtilisateur(String userId, Pageable pageable);
+    Page<AvisResDTO> getAvisUser(String userId, Pageable pageable);
 
-    StatistiqueAvisDTO getStatistiques(String userId);
+    double calculerNoteMoyenne(String userId);
 
-   void updateNoteEtBadge(String userId, Double moyenne, Integer totalAvis, String badge);
+    void deleteAvis(String avisId);
 }
