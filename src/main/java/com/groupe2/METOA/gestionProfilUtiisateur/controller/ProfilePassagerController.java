@@ -11,82 +11,109 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+@Tag(name = "Passager", description = "Gestion des passagers")
+@RestController
+@RequestMapping("/api/v1/users/{userId}/profile-passager")
+public class ProfilePassagerController {
 
-import java.io.IOException;
+    private final ProfilePassagerService profilePassagerService;
 
+    public ProfilePassagerController(ProfilePassagerService service) {
+        this.profilePassagerService = service;
+    }
 
-@Tag(name = "ProfilePassager", description = "Gestion des passagers")
-    @RestController
-    @RequestMapping("api/v1/users/{userId}/profile-passager")
-    public class ProfilePassagerController {
-
-        private final ProfilePassagerService profilePassagerService;
-
-        public ProfilePassagerController(ProfilePassagerService service) {
-            this.profilePassagerService = service;
-        }
-
-    @Operation(summary = "Créer un passager ")
+    // CREATE
+    @Operation(summary = "Créer un passager")
     @PostMapping
     public ResponseEntity<String> createPassager(
             @PathVariable String userId,
             @RequestBody ProfilePassagerReqDTO dto) {
 
         dto.setUserId(userId);
-this. profilePassagerService.createOrUpdateProfile( dto);
-        return ResponseEntity.status(201).body("create passage successfully");
+        profilePassagerService.createOrUpdateProfile(dto);
+
+        return ResponseEntity.status(201)
+                .body("Passager créé avec succès");
     }
 
-    @Operation(summary = "Modifier un passager ")
+    // UPDATE
+    @Operation(summary = "Modifier un passager")
     @PutMapping
     public ResponseEntity<String> updateProfile(
             @PathVariable String userId,
             @RequestBody ProfilePassagerReqDTO dto) {
-            dto.setUserId(userId);
-        profilePassagerService.updateProfileByUserId( dto);
-        return ResponseEntity.status(202).body("update passage successfully");
+
+        dto.setUserId(userId);
+        profilePassagerService.updateProfileByUserId(dto);
+
+        return ResponseEntity.ok("Passager modifié avec succès");
     }
 
-    @Operation(summary = "Afficher un passager ")
-    @GetMapping(consumes = "application/json")
-    public ResponseEntity<ProfilePassagerResDTO> getProfile(@PathVariable String userId) {
-        return ResponseEntity.status(200).body(profilePassagerService.getProfileByUserId(userId));
+    // GET ONE
+    @Operation(summary = "Afficher un passager")
+    @GetMapping
+    public ResponseEntity<ProfilePassagerResDTO> getProfile(
+            @PathVariable String userId) {
+
+        return ResponseEntity.ok(
+                profilePassagerService.getProfileByUserId(userId)
+        );
     }
 
-    @Operation(summary = "Afficher tous passager ")
-    @GetMapping(consumes = "application/json")
-    public ResponseEntity<Page<ProfilePassagerResDTO>> getAll(Pageable pageable) {
-        return ResponseEntity.status(200).body(profilePassagerService.getAllPassage(pageable));
+    // GET ALL
+    @Operation(summary = "Afficher tous les passagers")
+    @GetMapping("/all")
+    public ResponseEntity<Page<ProfilePassagerResDTO>> getAll(
+            Pageable pageable) {
+
+        return ResponseEntity.ok(
+                profilePassagerService.getAllPassage(pageable)
+        );
     }
 
-
-    @Operation(summary = "Supprimer un passager ")
+    // DELETE
+    @Operation(summary = "Supprimer un passager")
     @DeleteMapping
-    public ResponseEntity<String> deleteProfile(@PathVariable String userId) {
+    public ResponseEntity<String> deleteProfile(
+            @PathVariable String userId) {
+
         profilePassagerService.deleteProfileByUserId(userId);
-        return ResponseEntity.status(202).body("passage delete successfully");
+
+        return ResponseEntity.ok("Passager supprimé");
     }
 
-    @Operation(summary = "Ajouter ou modifier la photo du profile")
-    @PostMapping(value = "/photo",consumes = "multipart/form-data")
+    // UPLOAD PHOTO
+    @Operation(summary = "Ajouter ou modifier photo")
+    @PostMapping(value = "/photo", consumes = "multipart/form-data")
     public ResponseEntity<String> uploadPhoto(
             @PathVariable String userId,
             @RequestPart("file") MultipartFile file) {
-        profilePassagerService.uploadPhotoByUserId(userId, file);
-        return ResponseEntity.status(201).body("add picture successfully");
+
+        profilePassagerService.uploadPhotoByUserId(userId,file);
+
+        return ResponseEntity.ok("Photo ajoutée avec succès");
     }
 
-    @Operation(summary = "Afficher la photo du profile")
-    @GetMapping(value = "/photo",consumes = "multipart/form-data")
-    public ResponseEntity<String> getPhoto(@PathVariable String userId) {
-        return ResponseEntity.status(200).body(profilePassagerService.getPhotoByUserId(userId));
+    // GET PHOTO
+    @Operation(summary = "Afficher photo")
+    @GetMapping("/photo")
+    public ResponseEntity<String> getPhoto(
+            @PathVariable String userId) {
+
+        return ResponseEntity.ok(
+                profilePassagerService.getPhotoByUserId(userId)
+        );
     }
 
-    @Operation(summary = "Supprimer la photo du profile")
-    @DeleteMapping(value = "/photo",consumes = "multipart/form-data")
-    public ResponseEntity<String> deletePhoto(@PathVariable String userId) {
+    // DELETE PHOTO
+    @Operation(summary = "Supprimer photo")
+    @DeleteMapping("/photo")
+    public ResponseEntity<String> deletePhoto(
+            @PathVariable String userId) {
+
         profilePassagerService.deletePhotoByUserId(userId);
-        return ResponseEntity.status(202).body("delete picture successfully");
+
+        return ResponseEntity.ok("Photo supprimée");
     }
 
-    }
+}

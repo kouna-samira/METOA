@@ -17,127 +17,160 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
+@Tag(name = "conducteur", description = "Gestion des conducteurs")
 
-@Tag(name = "ProfileConducteur", description = "Gestion des conducteurs")
 @RestController
-@RequestMapping("api/v1/users/{userId}/profile-conducteur")
+@RequestMapping("/api/v1/conducteurs")
 public class ProfileConducteurController {
 
-
-    private final ProfileConducteurService profileConducteurService;
+    private final ProfileConducteurService service;
 
     public ProfileConducteurController(ProfileConducteurService service) {
-        this.profileConducteurService = service;
+        this.service = service;
     }
 
-
-
-    @Operation(summary = "Créer un conducteur")
-    @PostMapping("/{userId}")
+    // CREATE
+    @Operation(summary = "Créer un profil conducteur")
+    @PostMapping("/users/{userId}")
     public ResponseEntity<String> createProfile(
             @PathVariable String userId,
             @Valid @RequestBody ProfileConducteurReqDTO dto){
+
         dto.setUserId(userId);
-        this.profileConducteurService.createProfile(dto);
-        return ResponseEntity.status(201).body("conductor create succefull");
+        service.createProfile(dto);
+
+        return ResponseEntity.status(201)
+                .body("Conducteur créé avec succès");
     }
 
-    @Operation(summary = " mettre à jour un conducteur")
-    @PutMapping("/{userId}")
+    // UPDATE
+    @Operation(summary = "Modifier un profil conducteur")
+    @PutMapping("/users/{userId}")
     public ResponseEntity<String> updateProfile(
             @PathVariable String userId,
             @Valid @RequestBody ProfileConducteurReqDTO dto){
+
         dto.setUserId(userId);
-        this.profileConducteurService.updateProfile(dto);
-        return ResponseEntity.status(202).body("update succefull");
+        service.updateProfile(dto);
+
+        return ResponseEntity.ok("Profil conducteur modifié");
     }
 
+    // GET BY USER
+    @Operation(summary = "Afficher un conducteur")
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<ProfileConducteurResDTO> getProfile(
+            @PathVariable String userId){
 
-    @Operation(summary = "afficher un conducteur")
-    @GetMapping("/{userId}")
-    public ResponseEntity<ProfileConducteurResDTO> getProfile(@PathVariable String userId) {
-        return ResponseEntity.status(200).body(profileConducteurService.getProfileByUserId(userId));
+        return ResponseEntity.ok(
+                service.getProfileByUserId(userId)
+        );
     }
 
-    @Operation(summary = "affcher tous les conducteurs")
+    // GET ALL
+    @Operation(summary = "Afficher tous les conducteurs")
     @GetMapping
-    public ResponseEntity<Page<ProfileConducteurResDTO>> getAllProfiles(Pageable pageable){
-        return ResponseEntity.status(200).body(profileConducteurService.getAllProfiles(pageable));
+    public ResponseEntity<Page<ProfileConducteurResDTO>> getAllProfiles(
+            Pageable pageable){
+
+        return ResponseEntity.ok(
+                service.getAllProfiles(pageable)
+        );
     }
 
-    @Operation(summary = "affcher les conducteur par badge")
+    // GET BY BADGE
+    @Operation(summary = "Afficher les conducteurs par badge")
     @GetMapping("/badge/{badge}")
-    public ResponseEntity<List<ProfileConducteurResDTO>> getDriversByBadge(@PathVariable Badge badge){
-        return ResponseEntity.status(200).body(profileConducteurService.getDriversByBadge(badge));
+    public ResponseEntity<List<ProfileConducteurResDTO>> getDriversByBadge(
+            @PathVariable Badge badge){
+
+        return ResponseEntity.ok(
+                service.getDriversByBadge(badge)
+        );
     }
 
-    @Operation(summary = "Supprimer le profil conducteur")
-    @DeleteMapping
-    public ResponseEntity<String> deleteProfile(@PathVariable String userId) {
-        profileConducteurService.deleteProfile(userId);
-        return ResponseEntity.status(202).body("conductor delete successfully");
+    // DELETE
+    @Operation(summary = "Supprimer profil conducteur")
+    @DeleteMapping("/users/{userId}")
+    public ResponseEntity<String> deleteProfile(
+            @PathVariable String userId){
+
+        service.deleteProfile(userId);
+
+        return ResponseEntity.ok("Profil conducteur supprimé");
     }
 
-
-
-    @Operation(summary = "Uploader ou modifier la photo du conducteur")
-    @PostMapping(value = "/photo",consumes = "multipart/form-data")
+    // UPLOAD PHOTO
+    @Operation(summary = "Uploader photo conducteur")
+    @PostMapping(value = "/users/{userId}/photo", consumes = "multipart/form-data")
     public ResponseEntity<String> uploadPhoto(
             @PathVariable String userId,
-            @RequestPart("file") MultipartFile file) {
+            @RequestPart("file") MultipartFile file){
 
         return ResponseEntity.ok(
-                profileConducteurService.uploadPhotoByUserId(userId, file)
+                service.uploadPhotoByUserId(userId,file)
         );
     }
 
+    // GET PHOTO
+    @Operation(summary = "Afficher photo conducteur")
+    @GetMapping("/users/{userId}/photo")
+    public ResponseEntity<String> getPhoto(
+            @PathVariable String userId){
 
+        return ResponseEntity.ok(
+                service.getPhotoByUserId(userId)
+        );
+    }
 
-    @Operation(summary = "Uploader un document conducteur")
-    @PostMapping(value  ="/document" ,consumes = "multipart/form-data")
-    public ResponseEntity<Map<String, String>> uploadDocument(
+    // DELETE PHOTO
+    @Operation(summary = "Supprimer photo conducteur")
+    @DeleteMapping("/users/{userId}/photo")
+    public ResponseEntity<String> deletePhoto(
+            @PathVariable String userId){
+
+        service.deletePhotoByUserId(userId);
+
+        return ResponseEntity.ok("Photo supprimée");
+    }
+
+    // UPLOAD DOCUMENT
+    @Operation(summary = "Uploader document conducteur")
+    @PostMapping(value = "/users/{userId}/document", consumes = "multipart/form-data")
+    public ResponseEntity<Map<String,String>> uploadDocument(
             @PathVariable String userId,
             @RequestPart("file") MultipartFile file,
-            @RequestPart("typerDocument") TyperDocument typerDocument) {
+            @RequestPart("type") TyperDocument typerDocument){
 
-        String documentUrl =
-                profileConducteurService.uploadDocument(userId, file, typerDocument);
+        String url = service.uploadDocument(userId,file,typerDocument);
 
-        return ResponseEntity.ok(Map.of(
-                "documentUrl", documentUrl
-        ));
-    }
-
-    @Operation(summary = "Supprimer document")
-    @DeleteMapping(value = "/document",consumes = "multipart/form-data")
-    public ResponseEntity<String> deleteDocument(@PathVariable String userId) {
-        profileConducteurService.deleteDocument(userId);
-        return ResponseEntity.status(201).body("delete doc successfully");
-    }
-
-    @Operation(summary = "Afficher la photo")
-    @GetMapping(value = "/photo",consumes = "multipart/form-data")
-    public ResponseEntity<String> getPhoto(@PathVariable String userId) {
         return ResponseEntity.ok(
-                profileConducteurService.getPhotoByUserId(userId)
+                Map.of("documentUrl",url)
         );
     }
 
-    @Operation(summary = "Voir le document conducteur")
-    @GetMapping(value = "/document",consumes = "multipart/form-data")
-    public ResponseEntity<Map<String, String>> viewDocument(@PathVariable String userId) {
+    // VIEW DOCUMENT
+    @Operation(summary = "Voir document conducteur")
+    @GetMapping("/users/{userId}/document")
+    public ResponseEntity<Map<String,String>> viewDocument(
+            @PathVariable String userId){
 
-        String documentUrl = profileConducteurService.viewDocument(userId);
+        String url = service.viewDocument(userId);
 
-        return ResponseEntity.ok(Map.of(
-                "documentUrl", documentUrl
-        ));
+        return ResponseEntity.ok(
+                Map.of("documentUrl",url)
+        );
     }
-    @Operation(summary = "Supprimer la photo")
-    @DeleteMapping(value = "/photo",consumes = "multipart/form-data")
-    public ResponseEntity<String> deletePhoto(@PathVariable String userId) {
-        profileConducteurService.deletePhotoByUserId(userId);
-        return ResponseEntity.status(201).body("delete picture successfully");
+
+    // DELETE DOCUMENT
+    @Operation(summary = "Supprimer document conducteur")
+    @DeleteMapping("/users/{userId}/document")
+    public ResponseEntity<String> deleteDocument(
+            @PathVariable String userId){
+
+        service.deleteDocument(userId);
+
+        return ResponseEntity.ok("Document supprimé");
     }
 
 }

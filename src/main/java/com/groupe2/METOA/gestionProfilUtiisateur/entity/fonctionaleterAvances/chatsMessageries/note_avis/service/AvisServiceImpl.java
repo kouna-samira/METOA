@@ -1,15 +1,19 @@
 package com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.service;
 
 
-import com.groupe2.METOA.Service.Trajet.TrajetService;
+import com.groupe2.METOA.Entity.Trajet;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.dto.AvisReqDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.dto.AvisResDTO;
-import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.dto.StatistiqueAvisDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.entity.Avis;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.entity.Badge;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.mapper.AvisMapper;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.repo.AvisRepo;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.ProfileConducteur;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.User;
 import com.groupe2.METOA.gestionProfilUtiisateur.repository.ProfileConducteurRepo;
-import com.groupe2.METOA.gestionProfilUtiisateur.repository.ProfileRepo;
+import com.groupe2.METOA.gestionProfilUtiisateur.repository.UserRepo;
+import com.groupe2.METOA.repository.TrajetRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,151 +22,107 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AvisServiceImpl implements AvisService {
 
-    private final AvisRepo avisRepo;
-    private final TrajetService trajetService;
+    private final AvisRepo avisRepository;
+    private final UserRepo userRepo;
+    private final TrajetRepo trajetRepo;
     private final ProfileConducteurRepo profileRepo;
+    private final AvisMapper mapper;
 
-    public AvisServiceImpl(AvisRepo avisRepo, TrajetService trajetService, ProfileConducteurRepo profileRepo) {
-        this.avisRepo = avisRepo;
-        this.trajetService = trajetService;
+    @Override
+    public AvisResDTO createAvis(AvisReqDTO dto) {
 
-        this.profileRepo = profileRepo;
+        if(avisRepository.findAvisByAuteurAndTrajet(
+                dto.getAuteurId(),
+                dto.getTrajetId()).isPresent()){
+
+            throw new RuntimeException("Avis déjà donné pour ce trajet");
+        }
+
+        User auteur = userRepo.findById(dto.getAuteurId())
+                .orElseThrow();
+
+        User cible = userRepo.findById(dto.getCibleId())
+                .orElseThrow();
+
+        Trajet trajet = trajetRepo.findById(dto.getTrajetId())
+                .orElseThrow();
+
+        Avis avis = mapper.toEntity(dto);
+
+        avis.setAuteur(auteur);
+        avis.setCible(cible);
+        avis.setTrajet(trajet);
+        avis.setDateAvis(LocalDateTime.now());
+        avis.setVisible(true);
+
+        avisRepository.save(avis);
+
+        updateNoteEtBadge(cible.getIdUser());
+
+        return mapper.toDto(avis);
     }
 
     @Override
-    public AvisResDTO donnerAvis(String auteurId, AvisReqDTO dto) {
+    public List<AvisResDTO> getAvisPublicByUser(String userId){
 
-        if (dto.getNote() < 0 || dto.getNote() > 5) {
-            throw new IllegalArgumentException("La note doit être entre 0 et 5");
-        }
+        return avisRepository.findByCibleIdUserAndVisibleTrue(userId)
+                .stream()
+                .map(mapper::toDto)
+                .toList();
+    }
+    @Override
+    public Page<AvisResDTO> getAvisUser(String userId, Pageable pageable){
 
-        // Vérifier participation au trajet
-        if (!trajetService.utilisateurAParticipe(dto.getTrajetId(), auteurId)) {
-            throw new RuntimeException("Vous ne pouvez noter que si vous avez participé au trajet");
-        }
-
-        // Empêcher double notation
-        if (avisRepo.findByAuteurIdAndTrajetId(auteurId, dto.getTrajetId()).isPresent()) {
-            throw new RuntimeException("Vous avez déjà noté pour ce trajet");
-        }
-
-        Avis avis = Avis.builder()
-                .auteurId(auteurId)
-                .cibleId(dto.getCibleId())
-                .trajetId(dto.getTrajetId())
-                .note(dto.getNote())
-                .commentaire(dto.getCommentaire())
-                .modifiable(true)
-                .signale(false)
-                .dateCreation(LocalDateTime.now())
-                .build();
-
-        avisRepo.save(avis);
-
-        profileRepo.updateProfilStats(dto.getCibleId());
-
-        return mapToDTO(avis);
+        return avisRepository
+                .findByCibleIdUser(userId,pageable)
+                .map(mapper::toDto);
     }
 
     @Override
-    public AvisResDTO modifierAvis(String avisId, double note, String commentaire) {
+    public double calculerNoteMoyenne(String userId) {
 
-        Avis avis = avisRepo.findById(avisId)
-                .orElseThrow(() -> new RuntimeException("Avis introuvable"));
+        List<Avis> avis = avisRepository.findByCibleIdUserAndVisibleTrue(userId);
 
-        if (avis.getDateCreation().plusHours(24).isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Modification impossible après 24h");
-        }
-
-        avis.setNote(note);
-        avis.setCommentaire(commentaire);
-        avis.setDateModification(LocalDateTime.now());
-
-        avisRepo.save(avis);
-
-        updateProfilStats(avis.getCibleId());
-
-        return mapToDTO(avis);
-    }
-
-    @Override
-    public Page<AvisResDTO> getAvisUtilisateur(String userId, Pageable pageable) {
-        return avisRepo.findByCibleId(userId, pageable)
-                .map(this::mapToDTO);
-    }
-
-    @Override
-    public StatistiqueAvisDTO getStatistiques(String userId) {
-
-        List<Avis> avisList = avisRepo.findByCibleId(userId);
-
-        int total = avisList.size();
-
-        double moyenne = avisList.stream()
-                .mapToDouble(Avis::getNote)
+        return avis.stream()
+                .mapToInt(Avis::getNote)
                 .average()
                 .orElse(0);
-
-        long cinq = avisList.stream().filter(a -> a.getNote() == 5).count();
-        long quatre = avisList.stream().filter(a -> a.getNote() == 4).count();
-        long trois = avisList.stream().filter(a -> a.getNote() == 3).count();
-        long deux = avisList.stream().filter(a -> a.getNote() == 2).count();
-        long un = avisList.stream().filter(a -> a.getNote() == 1).count();
-
-        double taux = total == 0 ? 0 : ((cinq + quatre) * 100.0) / total;
-
-        Badge badge = calculerBadge(total, moyenne);
-
-        return StatistiqueAvisDTO.builder()
-                .moyenne(moyenne)
-                .totalAvis(total)
-                .cinqEtoiles(cinq)
-                .quatreEtoiles(quatre)
-                .troisEtoiles(trois)
-                .deuxEtoiles(deux)
-                .uneEtoile(un)
-                .tauxSatisfaction(taux)
-                .badge(badge)
-                .build();
     }
 
-    private Badge calculerBadge(int total, double moyenne) {
+    private void updateNoteEtBadge(String userId){
 
-        if (total >= 20 && moyenne >= 4.5)
-            return Badge.SUPER_CONDUCTEUR;
+        ProfileConducteur profile = profileRepo.findByUserIdUser(userId)
+                .orElse(null);
 
-        if (total >= 10 && moyenne >= 4)
-            return Badge.CONDUCTEUR_FIABLE;
+        if(profile == null) return;
 
-        if (total >= 15 && moyenne >= 4.3)
-            return Badge.PASSAGER_PREMIUM;
+        double moyenne = calculerNoteMoyenne(userId);
 
-        if (moyenne < 2 && total >= 5)
-            return Badge.A_RISQUE;
+        profile.setNoteMoyenne(moyenne);
 
-        return Badge.NOUVEAU;
+        int trajets = profile.getNombreTrajetsEffectues();
+
+        if(moyenne >= 4.8 && trajets >= 50)
+            profile.setBadge(Badge.SUPER_CONDUCTEUR);
+
+        else if(moyenne >= 4)
+            profile.setBadge(Badge.CONDUCTEUR_FIABLE);
+
+        else if(moyenne < 3)
+            profile.setBadge(Badge.A_RISQUE);
+
+        else
+            profile.setBadge(Badge.NOUVEAU);
+
+        profileRepo.save(profile);
     }
 
     @Override
-    public void updateNoteEtBadge(String userId,
-                                  Double moyenne,
-                                  Integer totalAvis,
-                                  String badge) {
+    public void deleteAvis(String avisId) {
 
-        profileRepo.updateStats(userId, moyenne, totalAvis, badge);
-    }
-
-    private AvisResDTO mapToDTO(Avis avis) {
-        return AvisResDTO.builder()
-                .id(avis.getId())
-                .auteurId(avis.getAuteurId())
-                .cibleId(avis.getCibleId())
-                .trajetId(avis.getTrajetId())
-                .note(avis.getNote())
-                .commentaire(avis.getCommentaire())
-                .dateCreation(avis.getDateCreation())
-                .build();
+        avisRepository.deleteById(avisId);
     }
 }
