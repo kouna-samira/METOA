@@ -8,6 +8,7 @@ import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.Profile;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.ProfilePassager;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.User;
 import com.groupe2.METOA.gestionProfilUtiisateur.exception.ProfilNotFoundException;
+import com.groupe2.METOA.gestionProfilUtiisateur.exception.UserAlreadyExisteException;
 import com.groupe2.METOA.gestionProfilUtiisateur.exception.UserNoteFoundException;
 import com.groupe2.METOA.gestionProfilUtiisateur.repository.ProfilePassagerRepo;
 import com.groupe2.METOA.gestionProfilUtiisateur.repository.UserRepo;
@@ -40,34 +41,27 @@ public class ProfilePassagerServiceImpl implements ProfilePassagerService {
 
 
     @Override
-    public ProfilePassagerResDTO createOrUpdateProfile(ProfilePassagerReqDTO dto) {
+    public ProfilePassagerResDTO create(ProfilePassagerReqDTO dto) {
         User user = userRepo.findById(dto.getUserId())
                 .orElseThrow(() -> new UserNoteFoundException(dto.getUserId()));
 
-        Optional<ProfilePassager> optionalProfile =
-                profilePassagerRepo.findByUser_IdUser(dto.getUserId());
+        ProfilePassager profilePassager = this.profilePassagerRepo.findByUser_IdUser(dto.getUserId())
+                .orElseThrow(()-> new ProfilNotFoundException("profile introvable"));
 
-        ProfilePassager profile;
-        if (optionalProfile.isPresent()) {
-            profile = optionalProfile.get();
-            profile.setAdresse(dto.getAdresse());
-            profile.setPreferences(dto.getPreferences());
-            profile.setBio(dto.getBio());
-            profile.setDateModificationProfile(LocalDate.now());
-        } else {
-            profile = new ProfilePassager();
-            profile.setUser(user);
-            profile.setAdresse(dto.getAdresse());
-            profile.setPreferences(dto.getPreferences());
-            profile.setBio(dto.getBio());
-            profile.setDateCreationProfile(LocalDate.now());
-            profile.setDateModificationProfile(LocalDate.now());
+        if (profilePassagerRepo.findByUser_IdUser(dto.getUserId()).isPresent()) {
+            throw new UserAlreadyExisteException("Cet utilisateur possède déjà un profile");
         }
 
+        profilePassager = profilePassagerMapper.toEntity(dto);
 
 
-        profilePassagerRepo.save(profile);
-        return profilePassagerMapper.toDto(profile);
+            profilePassager.setUser(user);
+            profilePassager.setAdresse(dto.getAdresse());
+            profilePassager.setPreferences(dto.getPreferences());
+            profilePassager.setBio(dto.getBio());
+            profilePassager.setDateCreationProfile(LocalDate.now());
+        profilePassagerRepo.save(profilePassager);
+        return profilePassagerMapper.toDto(profilePassager);
     }
 
     @Override

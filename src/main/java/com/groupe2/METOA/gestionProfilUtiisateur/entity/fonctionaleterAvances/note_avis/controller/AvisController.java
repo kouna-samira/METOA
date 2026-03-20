@@ -3,7 +3,6 @@ package com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.n
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.note_avis.dto.AvisReqDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.note_avis.dto.AvisResDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.note_avis.service.AvisService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

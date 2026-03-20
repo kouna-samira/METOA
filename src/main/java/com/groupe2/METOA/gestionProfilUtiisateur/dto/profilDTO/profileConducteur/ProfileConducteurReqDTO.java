@@ -17,7 +17,6 @@ public class ProfileConducteurReqDTO {
     @NotBlank(message = "L'adresse est obligatoire")
     @Size(min = 3, max = 150, message = "Adresse invalide")
     private String adresse;
-    private String photoUrl;
     @Size(max = 500, message = "La bio ne doit pas dépasser 500 caractères")
     private String bio;
     @NotBlank(message = "Les préférences sont obligatoires")

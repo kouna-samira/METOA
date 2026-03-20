@@ -48,6 +48,7 @@ public class UserServiceImpl implements UserService {
         user.setDateInscription(LocalDateTime.now());
         user.setStatusUser(StatusUser.ACTIF);
 
+
         User savedUser = userRepo.save(user);
 
         return userMapper.toDto(savedUser);

@@ -21,7 +21,7 @@ public class NotificationService {
                 .user(user)
                 .message(msg)
                 .type(type)
-                .read(false)
+                . readStatus(false)
                 .createdAt(LocalDateTime.now())
                 .build();
 
@@ -33,6 +33,6 @@ public class NotificationService {
     }
 
     public long countUnread(String userId) {
-        return notificationRepo.countByUser_IdUserAndReadFalse(userId);
+        return notificationRepo.countByUser_IdUserAndReadStatusFalse(userId);
     }
 }

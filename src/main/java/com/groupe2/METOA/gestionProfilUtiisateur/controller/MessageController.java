@@ -93,12 +93,15 @@ public class MessageController {
                 messageService.getMessagesPaginated(conversationId, page, size)
         );
     }
+
+    @Operation(summary = "modifier le content d' un messages")
     @PutMapping
     public ResponseEntity<Message> editeNessage(@PathVariable String idMessage , @PathVariable String content){
         return ResponseEntity.ok(this.messageService.editMessage(idMessage, content));
 
 
     }
+    @Operation(summary = "pagination des messages")
     @DeleteMapping
     public ResponseEntity<String> deleteMessage(@PathVariable String messageId){
         this.messageService.deleteMessage(messageId);

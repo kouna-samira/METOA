@@ -5,6 +5,7 @@ import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.StatusUser;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -35,4 +36,10 @@ OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%'))
 OR LOWER(u.ville) LIKE LOWER(CONCAT('%', :keyword, '%'))
 """)
     Page<User> searchUsers(String keyword, Pageable pageable);
+
+    @EntityGraph(attributePaths = {
+            "profileConducteur",
+            "profilePassager"
+    })
+    Page<User> findAll(Pageable pageable);
 }

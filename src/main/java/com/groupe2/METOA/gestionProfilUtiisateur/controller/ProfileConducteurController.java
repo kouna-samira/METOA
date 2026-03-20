@@ -6,7 +6,6 @@ import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.no
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.TyperDocument;
 import com.groupe2.METOA.gestionProfilUtiisateur.service.profileConducteur.ProfileConducteurService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -34,21 +33,20 @@ public class ProfileConducteurController {
     @PostMapping("/users/{userId}")
     public ResponseEntity<String> createProfile(
             @PathVariable String userId,
-            @Valid @RequestBody ProfileConducteurReqDTO dto){
+            @RequestBody ProfileConducteurReqDTO dto){
 
         dto.setUserId(userId);
         service.createProfile(dto);
-
-        return ResponseEntity.status(201)
-                .body("Conducteur créé avec succès");
+        return ResponseEntity.status(201).body("coducteur cree avec succes");
     }
+
 
     // UPDATE
     @Operation(summary = "Modifier un profil conducteur")
     @PutMapping("/users/{userId}")
     public ResponseEntity<String> updateProfile(
             @PathVariable String userId,
-            @Valid @RequestBody ProfileConducteurReqDTO dto){
+            @RequestBody ProfileConducteurReqDTO dto){
 
         dto.setUserId(userId);
         service.updateProfile(dto);
@@ -113,7 +111,8 @@ public class ProfileConducteurController {
     }
 
     // GET PHOTO
-    @GetMapping("/photo")
+    @Operation(summary = "afficher photo conducteur")
+    @GetMapping("/users/{userId}/photo")
     public ResponseEntity<?> getPhoto(@PathVariable String userId) {
         String url = service.getPhotoByUserId(userId);
 
@@ -123,6 +122,7 @@ public class ProfileConducteurController {
     }
 
     // DELETE PHOTO
+
     @Operation(summary = "Supprimer photo conducteur")
     @DeleteMapping("/users/{userId}/photo")
     public ResponseEntity<String> deletePhoto(
@@ -149,6 +149,7 @@ public class ProfileConducteurController {
     }
 
     // VIEW DOCUMENT
+
     @Operation(summary = "Voir document conducteur")
     @GetMapping("/users/{userId}/document")
     public ResponseEntity<Map<String,String>> viewDocument(

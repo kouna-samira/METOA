@@ -17,26 +17,14 @@ public interface ProfileConducteurMapper {
 
 
     // req -> entity
-    @Mapping(target = "profileConducteurId", ignore = true)
-    @Mapping(target = "dateCreationProfile", ignore = true)
-    @Mapping(target = "dateModificationProfile", ignore = true)
-    @Mapping(target = "user", source = "userId", qualifiedByName = "mapUser")
+
     ProfileConducteur toEntity(ProfileConducteurReqDTO dto);
 
 
     // modifier
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "profileConducteurId", ignore = true)
-    @Mapping(target = "user", ignore = true)
     void updateEntityFromDto(ProfileConducteurReqDTO dto, @MappingTarget ProfileConducteur entity);
 
 
-    // user
-    @Named("mapUser")
-    default User mapUser(String userId) {
-        if (userId == null) return null;
-        User user = new User();
-        user.setIdUser(userId);
-        return user;
-    }
+
 }

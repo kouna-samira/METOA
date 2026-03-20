@@ -4,7 +4,6 @@ import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profilePassager.P
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profilePassager.ProfilePassagerResDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.service.profiePassager.ProfilePassagerService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +29,7 @@ public class ProfilePassagerController {
             @RequestBody ProfilePassagerReqDTO dto) {
 
         dto.setUserId(userId);
-        profilePassagerService.createOrUpdateProfile(dto);
+        profilePassagerService.create(dto);
 
         return ResponseEntity.status(201)
                 .body("Passager créé avec succès");

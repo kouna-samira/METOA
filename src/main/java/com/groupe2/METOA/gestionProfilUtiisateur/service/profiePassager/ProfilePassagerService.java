@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public interface ProfilePassagerService {
 
-    ProfilePassagerResDTO createOrUpdateProfile(ProfilePassagerReqDTO dto) ;
+    ProfilePassagerResDTO create(ProfilePassagerReqDTO dto) ;
 
     ProfilePassagerResDTO getProfileByUserId(String userId);
 

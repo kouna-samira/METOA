@@ -7,10 +7,7 @@ import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.no
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.ProfileConducteur;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.TyperDocument;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.User;
-import com.groupe2.METOA.gestionProfilUtiisateur.exception.NullableFillException;
-import com.groupe2.METOA.gestionProfilUtiisateur.exception.ProfilNotFoundException;
-import com.groupe2.METOA.gestionProfilUtiisateur.exception.ProfileAlreadyExistException;
-import com.groupe2.METOA.gestionProfilUtiisateur.exception.UserNoteFoundException;
+import com.groupe2.METOA.gestionProfilUtiisateur.exception.*;
 import com.groupe2.METOA.gestionProfilUtiisateur.repository.ProfileConducteurRepo;
 import com.groupe2.METOA.gestionProfilUtiisateur.repository.UserRepo;
 import org.springframework.data.domain.Page;
@@ -45,12 +42,13 @@ public class ProfileConducteurServiceImpl implements ProfileConducteurService {
     @Override
     public ProfileConducteurResDTO createProfile( ProfileConducteurReqDTO dto) {
 
-        if(profileConducteurRepo.existsByUserIdUser(dto.getUserId())){
-            throw new ProfileAlreadyExistException("Profil conducteur déjà existant");
-        }
-
         User user = userRepo.findById(dto.getUserId())
                 .orElseThrow(() -> new UserNoteFoundException("Utilisateur introuvable"));
+
+        if (profileConducteurRepo.findByUserIdUser(dto.getUserId()).isPresent()) {
+            throw new ProfileAlreadyExistException("Cet utilisateur possède déjà un profil standard");
+        }
+
 
         ProfileConducteur profile = profileConducteurMapper.toEntity(dto);
 
@@ -60,8 +58,9 @@ public class ProfileConducteurServiceImpl implements ProfileConducteurService {
         profile.setNoteMoyenne(0);
         profile.setBadge(Badge.NOUVEAU);
         profile.setDateCreationProfile(LocalDate.now());
+        ProfileConducteur savedProfile = profileConducteurRepo.save(profile);
 
-        return profileConducteurMapper.toDto(profileConducteurRepo.save(profile));
+        return profileConducteurMapper.toDto(profile);
     }
 
     @Override

@@ -24,11 +24,12 @@ public class Notification {
     private User user;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 20)
     private NotificationType type;
 
     private String message;
 
-    private boolean read;
+    private boolean readStatus;
 
     private LocalDateTime createdAt;
 }
