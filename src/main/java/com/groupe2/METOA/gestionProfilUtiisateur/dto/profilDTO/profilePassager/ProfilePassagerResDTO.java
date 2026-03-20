@@ -1,5 +1,6 @@
 package com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profilePassager;
 
+import com.groupe2.METOA.gestionProfilUtiisateur.dto.userDTO.UserResDTO;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -21,4 +22,5 @@ public class ProfilePassagerResDTO {
     private String frequenceVoyage;
     private LocalDate dateCreationProfile;
     private LocalDate dateModificationProfile;
+    private UserResDTO userResDTO;
 }

@@ -3,8 +3,7 @@ package com.groupe2.METOA.gestionProfilUtiisateur.service.profileConducteur;
 import com.groupe2.METOA.gestionProfilUtiisateur.classMapp.ProfileConducteurMapper;
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profileConducteur.ProfileConducteurReqDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profileConducteur.ProfileConducteurResDTO;
-import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.entity.Badge;
-import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.Profile;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.note_avis.entity.Badge;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.ProfileConducteur;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.TyperDocument;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.User;
@@ -26,7 +25,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProfileConducteurServiceImpl implements ProfileConducteurService {

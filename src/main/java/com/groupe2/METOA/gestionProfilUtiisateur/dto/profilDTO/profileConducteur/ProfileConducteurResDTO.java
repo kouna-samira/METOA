@@ -1,5 +1,6 @@
 package com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profileConducteur;
 
+import com.groupe2.METOA.gestionProfilUtiisateur.dto.userDTO.UserResDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,5 +33,5 @@ import java.time.LocalDate;
 
         private Double tauxAcceptation;
 
-        private String userId; // pour exposer l'id du user uniquement
+        private UserResDTO userResDTO;
     }

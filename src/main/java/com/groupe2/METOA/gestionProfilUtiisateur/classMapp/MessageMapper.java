@@ -1,6 +1,6 @@
 package com.groupe2.METOA.gestionProfilUtiisateur.classMapp;
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.message.MessageResDTO;
-import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.message.Message;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.message.entity.Message;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

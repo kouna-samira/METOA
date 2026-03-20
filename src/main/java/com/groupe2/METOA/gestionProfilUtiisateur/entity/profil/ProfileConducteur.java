@@ -1,7 +1,7 @@
 package com.groupe2.METOA.gestionProfilUtiisateur.entity.profil;
 
 
-import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.entity.Badge;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.note_avis.entity.Badge;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

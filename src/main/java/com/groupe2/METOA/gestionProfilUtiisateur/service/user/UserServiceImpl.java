@@ -5,6 +5,7 @@ import com.groupe2.METOA.gestionProfilUtiisateur.classMapp.UserMapper;
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.userDTO.UserReqDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.userDTO.UserResDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.userDTO.UserSearchDTO;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.StatusUser;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.User;
 import com.groupe2.METOA.gestionProfilUtiisateur.exception.UserAlreadyExisteException;
 import com.groupe2.METOA.gestionProfilUtiisateur.exception.UserNoteFoundException;
@@ -45,6 +46,7 @@ public class UserServiceImpl implements UserService {
 
         user.setPasse(passwordEncoder.encode(dto.getPasse()));
         user.setDateInscription(LocalDateTime.now());
+        user.setStatusUser(StatusUser.ACTIF);
 
         User savedUser = userRepo.save(user);
 

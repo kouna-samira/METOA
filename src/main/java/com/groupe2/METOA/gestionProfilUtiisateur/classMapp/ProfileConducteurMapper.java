@@ -12,7 +12,7 @@ import org.mapstruct.*;
 public interface ProfileConducteurMapper {
 
     //  ENTITY -> RESPONSE
-    @Mapping(source = "user.idUser", target = "userId")
+
     ProfileConducteurResDTO toDto(ProfileConducteur profileConducteur);
 
 

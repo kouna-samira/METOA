@@ -1,7 +1,7 @@
 package com.groupe2.METOA.gestionProfilUtiisateur.dto.message;
 
 
-import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.message.MessageStatus;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.message.entity.MessageStatus;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

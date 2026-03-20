@@ -97,12 +97,12 @@ public class ProfilePassagerController {
     // GET PHOTO
     @Operation(summary = "Afficher photo")
     @GetMapping("/photo")
-    public ResponseEntity<String> getPhoto(
-            @PathVariable String userId) {
+    public ResponseEntity<?> getPhoto(@PathVariable String userId) {
+        String url = profilePassagerService.getPhotoByUserId(userId);
 
-        return ResponseEntity.ok(
-                profilePassagerService.getPhotoByUserId(userId)
-        );
+        return ResponseEntity.status(302)
+                .header("Location", url)
+                .build();
     }
 
     // DELETE PHOTO

@@ -2,7 +2,7 @@ package com.groupe2.METOA.gestionProfilUtiisateur.controller;
 
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profileConducteur.ProfileConducteurReqDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profileConducteur.ProfileConducteurResDTO;
-import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.note_avis.entity.Badge;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.note_avis.entity.Badge;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.TyperDocument;
 import com.groupe2.METOA.gestionProfilUtiisateur.service.profileConducteur.ProfileConducteurService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -113,14 +113,13 @@ public class ProfileConducteurController {
     }
 
     // GET PHOTO
-    @Operation(summary = "Afficher photo conducteur")
-    @GetMapping("/users/{userId}/photo")
-    public ResponseEntity<String> getPhoto(
-            @PathVariable String userId){
+    @GetMapping("/photo")
+    public ResponseEntity<?> getPhoto(@PathVariable String userId) {
+        String url = service.getPhotoByUserId(userId);
 
-        return ResponseEntity.ok(
-                service.getPhotoByUserId(userId)
-        );
+        return ResponseEntity.status(302)
+                .header("Location", url)
+                .build();
     }
 
     // DELETE PHOTO
