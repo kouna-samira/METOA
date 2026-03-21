@@ -1,5 +1,6 @@
 package com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.note_avis.mapper;
 
+
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.note_avis.dto.AvisReqDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.note_avis.dto.AvisResDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.note_avis.entity.Avis;
@@ -11,4 +12,5 @@ public interface AvisMapper {
     Avis toEntity(AvisReqDTO dto);
 
     AvisResDTO toDto(Avis avis);
+
 }

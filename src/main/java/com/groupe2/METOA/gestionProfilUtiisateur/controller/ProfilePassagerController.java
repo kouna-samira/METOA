@@ -6,6 +6,7 @@ import com.groupe2.METOA.gestionProfilUtiisateur.service.profiePassager.ProfileP
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,7 +64,9 @@ public class ProfilePassagerController {
     @Operation(summary = "Afficher tous les passagers")
     @GetMapping("/all")
     public ResponseEntity<Page<ProfilePassagerResDTO>> getAll(
-            Pageable pageable) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size){
+        Pageable pageable = PageRequest.of(page, size);
 
         return ResponseEntity.ok(
                 profilePassagerService.getAllPassage(pageable)

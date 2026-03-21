@@ -9,13 +9,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 @Tag(name = "conducteur", description = "Gestion des conducteurs")
 
 @RestController
@@ -69,7 +69,9 @@ public class ProfileConducteurController {
     @Operation(summary = "Afficher tous les conducteurs")
     @GetMapping
     public ResponseEntity<Page<ProfileConducteurResDTO>> getAllProfiles(
-            Pageable pageable){
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size){
+        Pageable pageable = PageRequest.of(page, size);
 
         return ResponseEntity.ok(
                 service.getAllProfiles(pageable)
@@ -133,44 +135,5 @@ public class ProfileConducteurController {
         return ResponseEntity.ok("Photo supprimée");
     }
 
-    // UPLOAD DOCUMENT
-    @Operation(summary = "Uploader document conducteur")
-    @PostMapping(value = "/users/{userId}/document", consumes = "multipart/form-data")
-    public ResponseEntity<Map<String,String>> uploadDocument(
-            @PathVariable String userId,
-            @RequestPart("file") MultipartFile file,
-            @RequestPart("type") TyperDocument typerDocument){
-
-        String url = service.uploadDocument(userId,file,typerDocument);
-
-        return ResponseEntity.ok(
-                Map.of("documentUrl",url)
-        );
-    }
-
-    // VIEW DOCUMENT
-
-    @Operation(summary = "Voir document conducteur")
-    @GetMapping("/users/{userId}/document")
-    public ResponseEntity<Map<String,String>> viewDocument(
-            @PathVariable String userId){
-
-        String url = service.viewDocument(userId);
-
-        return ResponseEntity.ok(
-                Map.of("documentUrl",url)
-        );
-    }
-
-    // DELETE DOCUMENT
-    @Operation(summary = "Supprimer document conducteur")
-    @DeleteMapping("/users/{userId}/document")
-    public ResponseEntity<String> deleteDocument(
-            @PathVariable String userId){
-
-        service.deleteDocument(userId);
-
-        return ResponseEntity.ok("Document supprimé");
-    }
 
 }

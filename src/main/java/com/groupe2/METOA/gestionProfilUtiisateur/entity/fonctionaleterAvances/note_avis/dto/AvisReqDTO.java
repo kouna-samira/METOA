@@ -19,6 +19,5 @@ public class AvisReqDTO {
     private String trajetId;
 
     private String auteurId;
-
-    private String cibleId;
+    private  String cibleId;
 }

@@ -32,10 +32,5 @@ public interface ProfileConducteurService {
 
     String uploadDocument(String userId, MultipartFile file, TyperDocument typerDocument);
 
-    String downloadDocument(String userId);
-
-    String viewDocument(String profileId) ;
-
-    void deleteDocument(String userId);
 
 }

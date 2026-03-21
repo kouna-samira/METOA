@@ -2,6 +2,7 @@ package com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.n
 
 
 import com.groupe2.METOA.Entity.Trajet;
+import com.groupe2.METOA.exception.TrajetCompletException;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.note_avis.dto.AvisReqDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.note_avis.dto.AvisResDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.note_avis.entity.Avis;
@@ -15,7 +16,9 @@ import com.groupe2.METOA.gestionProfilUtiisateur.repository.UserRepo;
 import com.groupe2.METOA.repository.TrajetRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -31,14 +34,15 @@ public class AvisServiceImpl implements AvisService {
     private final ProfileConducteurRepo profileRepo;
     private final AvisMapper mapper;
 
+
     @Override
     public AvisResDTO createAvis(AvisReqDTO dto) {
 
-        if(avisRepository.findAvisByAuteurAndTrajet(
+        if (avisRepository.findByAuteurIdUserAndTrajetIdTrajet(
                 dto.getAuteurId(),
-                dto.getTrajetId()).isPresent()){
+                dto.getTrajetId()).isPresent()) {
 
-            throw new RuntimeException("Avis déjà donné pour ce trajet");
+            throw new TrajetCompletException("Avis déjà donné pour ce trajet");
         }
 
         User auteur = userRepo.findById(dto.getAuteurId())
@@ -66,18 +70,37 @@ public class AvisServiceImpl implements AvisService {
     }
 
     @Override
-    public List<AvisResDTO> getAvisPublicByUser(String userId){
-
-        return avisRepository.findByCibleIdUserAndVisibleTrue(userId)
-                .stream()
-                .map(mapper::toDto)
-                .toList();
-    }
-    @Override
     public Page<AvisResDTO> getAvisUser(String userId, Pageable pageable){
 
         return avisRepository
-                .findByCibleIdUser(userId,pageable)
+                .findByCibleIdUserAndVisibleTrue(userId, pageable)
+                .map(mapper::toDto);
+    }
+
+    public Page<AvisResDTO> getAvisByNote(String userId, int note, Pageable pageable){
+
+        return avisRepository
+                .findByCibleIdUserAndNoteGreaterThanEqualAndVisibleTrue(userId, note, pageable)
+                .map(mapper::toDto);
+    }
+
+    @Override
+    public Page<AvisResDTO> getAvisUser(
+            String userId,
+            int page,
+            int size,
+            String sortBy,
+            String direction
+    ) {
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return avisRepository
+                .findByCibleIdUserAndVisibleTrue(userId, pageable)
                 .map(mapper::toDto);
     }
 

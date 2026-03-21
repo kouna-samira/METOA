@@ -11,11 +11,12 @@ public interface AvisService {
 
     AvisResDTO createAvis(AvisReqDTO dto);
 
-    List<AvisResDTO> getAvisPublicByUser(String userId);
+    Page<AvisResDTO> getAvisByNote(String userId, int note, Pageable pageable);
 
-    Page<AvisResDTO> getAvisUser(String userId, Pageable pageable);
+
+        Page<AvisResDTO> getAvisUser(String userId, Pageable pageable);
 
     double calculerNoteMoyenne(String userId);
 
-    void deleteAvis(String avisId);
+    void deleteAvis(String avisId);Page<AvisResDTO> getAvisUser(String userId, int page, int size, String sortBy, String direction);
 }

@@ -10,14 +10,19 @@ import java.util.List;
 import java.util.Optional;
 public interface AvisRepo extends JpaRepository<Avis,String> {
 
+    // Vérifier si un avis existe déjà pour un trajet
+    Optional<Avis> findByAuteurIdUserAndTrajetIdTrajet(String auteurId, String trajetId);
+
+    // Tous les avis visibles d’un utilisateur (pagination)
+    Page<Avis> findByCibleIdUserAndVisibleTrue(String userId, Pageable pageable);
+
+    // Liste simple (utile pour calcul)
     List<Avis> findByCibleIdUserAndVisibleTrue(String userId);
 
-    Page<Avis> findByCibleIdUser(String userId, Pageable pageable);
+    // Filtrer par note
+    Page<Avis> findByCibleIdUserAndNoteGreaterThanEqualAndVisibleTrue(
+            String userId, int note, Pageable pageable);
 
-    @Query("""
-SELECT a FROM Avis a
-WHERE a.auteur.idUser = :auteurId
-AND a.trajet.idTrajet = :trajetId
-""")
-    Optional<Avis> findAvisByAuteurAndTrajet(String auteurId, String trajetId);
-}
+    // Trier par date
+    Page<Avis> findByCibleIdUserAndVisibleTrueOrderByDateAvisDesc(
+            String userId, Pageable pageable);}

@@ -1,6 +1,7 @@
 package com.groupe2.METOA.gestionProfilUtiisateur.service.profileConducteur;
 
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.TyperDocument;
+import com.groupe2.METOA.gestionProfilUtiisateur.exception.NullableFillException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -35,35 +36,70 @@ public class DocumentService {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("Le fichier est vide");
         }
+
+        if (file.getSize() > 5 * 1024 * 1024) {
+            throw new IllegalArgumentException("Fichier trop volumineux (max 5MB)");
+        }
+
         String contentType = file.getContentType();
-        if (!allowedMimeTypes.contains(contentType)) {
+
+        if (contentType == null || !allowedMimeTypes.contains(contentType)) {
             throw new IllegalArgumentException("Type de fichier non autorisé : " + contentType);
+        }
+
+        String filename = StringUtils.cleanPath(file.getOriginalFilename());
+
+        if (filename.contains("..")) {
+            throw new NullableFillException("Nom de fichier invalide");
+        }
+
+        String extension = filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
+
+        List<String> allowedExtensions = List.of("pdf", "doc", "docx", "txt");
+
+        if (!allowedExtensions.contains(extension)) {
+            throw new IllegalArgumentException("Extension non autorisée");
         }
     }
 
     // Upload document
     public String uploadDocument(String userId, MultipartFile file, TyperDocument type) {
         validateFile(file);
+
         try {
             Path userDir = Paths.get(uploadDir, userId);
             Files.createDirectories(userDir);
 
-            String filename = StringUtils.cleanPath(file.getOriginalFilename());
+            String cleanName = StringUtils.cleanPath(file.getOriginalFilename());
+
+            if (cleanName.contains("..")) {
+                throw new NullableFillException("Nom de fichier invalide");
+            }
+
+            String extension = cleanName.substring(cleanName.lastIndexOf('.') + 1).toLowerCase();
+
+            List<String> allowedExtensions = List.of("pdf", "doc", "docx", "txt");
+            if (!allowedExtensions.contains(extension)) {
+                throw new IllegalArgumentException("Extension non autorisée");
+            }
+
+            String filename = type.name() + "_" + System.currentTimeMillis() + "_" + cleanName;
+
             Path filePath = userDir.resolve(filename);
 
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            return filePath.toAbsolutePath().toString();
+            return "/users/" + userId + "/document/" + filename;
+
         } catch (IOException e) {
-            throw new RuntimeException("Erreur lors de l'upload du fichier", e);
+            throw new RuntimeException("Erreur upload fichier", e);
         }
     }
-
     // Voir document (retourne le chemin)
     public String viewDocument(String userId, String filename) {
         Path filePath = Paths.get(uploadDir, userId, filename);
         if (!Files.exists(filePath)) {
-            throw new RuntimeException("Fichier non trouvé");
+            throw new NullableFillException("Fichier non trouvé");
         }
         return filePath.toAbsolutePath().toString();
     }

@@ -1,8 +1,10 @@
 package com.groupe2.METOA.gestionProfilUtiisateur.service.profileConducteur;
 
 import com.groupe2.METOA.gestionProfilUtiisateur.classMapp.ProfileConducteurMapper;
+import com.groupe2.METOA.gestionProfilUtiisateur.classMapp.UserMapper;
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profileConducteur.ProfileConducteurReqDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profileConducteur.ProfileConducteurResDTO;
+import com.groupe2.METOA.gestionProfilUtiisateur.dto.userDTO.UserResDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.note_avis.entity.Badge;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.ProfileConducteur;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.TyperDocument;
@@ -30,12 +32,14 @@ public class ProfileConducteurServiceImpl implements ProfileConducteurService {
     private final ProfileConducteurRepo profileConducteurRepo;
     private final ProfileConducteurMapper profileConducteurMapper;
     private final UserRepo userRepo;
+    private final UserMapper userMapper;
     private final Path uploadDir = Paths.get("uploads/conducteurs/");
 
-    public ProfileConducteurServiceImpl(ProfileConducteurRepo profileConducteurRepo, ProfileConducteurMapper profileConducteurMapper, UserRepo userRepo) {
+    public ProfileConducteurServiceImpl(ProfileConducteurRepo profileConducteurRepo, ProfileConducteurMapper profileConducteurMapper, UserRepo userRepo, UserMapper userMapper) {
         this.profileConducteurRepo = profileConducteurRepo;
         this.profileConducteurMapper = profileConducteurMapper;
         this.userRepo = userRepo;
+        this.userMapper = userMapper;
     }
 
 
@@ -54,8 +58,8 @@ public class ProfileConducteurServiceImpl implements ProfileConducteurService {
 
         profile.setUser(user);
         profile.setActif(true);
-        profile.setNombreTrajetsEffectues(0);
-        profile.setNoteMoyenne(0);
+        profile.setNombreTrajetsEffectues(dto.getNombreTrajetsEffectues());
+        profile.setNoteMoyenne(dto.getNoteMoyenne());
         profile.setBadge(Badge.NOUVEAU);
         profile.setDateCreationProfile(LocalDate.now());
         ProfileConducteur savedProfile = profileConducteurRepo.save(profile);
@@ -82,6 +86,7 @@ public class ProfileConducteurServiceImpl implements ProfileConducteurService {
 
         ProfileConducteur profile = profileConducteurRepo.findByUserIdUser(userId)
                 .orElseThrow(() -> new ProfilNotFoundException("conducteur introuvable"));
+
 
         return profileConducteurMapper.toDto(profile);
     }
@@ -200,33 +205,6 @@ public class ProfileConducteurServiceImpl implements ProfileConducteurService {
         } catch (IOException e) {
             throw new RuntimeException("Erreur upload document : " + e.getMessage(), e);
         }
-    }
-
-    @Override
-    public String downloadDocument(String userId) {
-        ProfileConducteur profile = profileConducteurRepo.findByUserIdUser(userId)
-                .orElseThrow(() -> new ProfilNotFoundException("Profil introuvable"));
-
-        if (profile.getDocumentUrl() == null) throw new NullableFillException("Aucun document disponible");
-
-        return profile.getDocumentUrl();
-    }
-
-    @Override
-    public String viewDocument(String userId) {
-        return downloadDocument(userId);
-    }
-
-    @Override
-    public void deleteDocument(String userId) {
-        ProfileConducteur profile = profileConducteurRepo.findByUserIdUser(userId)
-                .orElseThrow(() -> new ProfilNotFoundException("Profil introuvable"));
-
-        deleteLocalFile(profile.getDocumentUrl());
-        profile.setDocumentUrl(null);
-        profile.setDocumentName(null);
-        profile.setDocumentType(null);
-        profileConducteurRepo.save(profile);
     }
 
     // --- Méthode utilitaire ---
