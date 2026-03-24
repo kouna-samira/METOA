@@ -1,4 +1,4 @@
-package com.metoa.service;
+package com.groupe2.METOA.service;
 
 import com.metoa.entity.Passager;
 import com.metoa.entity.Reservation;
@@ -8,6 +8,7 @@ import com.metoa.exception.ResourceNotFoundException;
 import com.metoa.repository.PassagerRepository;
 import com.metoa.repository.ReservationRepository;
 import com.metoa.repository.TrajetRepository;
+import com.metoa.service.ReservationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;

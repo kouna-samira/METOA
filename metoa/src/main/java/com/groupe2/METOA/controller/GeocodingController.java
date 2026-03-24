@@ -1,4 +1,5 @@
-package com.metoa.controller;
+package com.groupe2.METOA.controller;
+
 
 import com.metoa.dto.GeocodingResultDTO;
 import com.metoa.service.GeocodingService;

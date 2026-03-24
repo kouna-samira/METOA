@@ -1,4 +1,4 @@
-package com.metoa.config;
+package com.groupe2.METOA.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;

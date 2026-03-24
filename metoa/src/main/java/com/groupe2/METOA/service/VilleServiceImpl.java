@@ -1,10 +1,11 @@
-package com.metoa.service;
+package com.groupe2.METOA.service;
 
 import com.metoa.entity.Ville;
 import com.metoa.exception.ResourceExistsException;
 import com.metoa.exception.ResourceNotFoundException;
 import com.metoa.repository.TrajetRepository;
 import com.metoa.repository.VilleRepository;
+import com.metoa.service.VilleService;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;

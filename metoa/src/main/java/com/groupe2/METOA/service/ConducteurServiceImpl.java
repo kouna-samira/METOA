@@ -1,10 +1,11 @@
-package com.metoa.service;
+package com.groupe2.METOA.service;
 
 import com.metoa.dto.TrajetReqDTO;
 import com.metoa.entity.*;
 import com.metoa.exception.ResourceNotFoundException;
 import com.metoa.repository.ReservationRepository;
 import com.metoa.repository.TrajetRepository;
+import com.metoa.service.ConducteurService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;

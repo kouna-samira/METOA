@@ -1,4 +1,4 @@
-package com.metoa.service;
+package com.groupe2.METOA.service;
 
 import com.metoa.dto.TrajetReqDTO;
 import com.metoa.entity.Reservation;

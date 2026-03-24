@@ -1,4 +1,4 @@
-package com.metoa.repository;
+package com.groupe2.METOA.repository;
 
 import com.metoa.entity.Trajet;
 import org.springframework.data.jpa.repository.JpaRepository;

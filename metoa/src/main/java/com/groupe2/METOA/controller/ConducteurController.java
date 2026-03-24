@@ -1,4 +1,4 @@
-package com.metoa.controller;
+package com.groupe2.METOA.controller;
 
 import com.metoa.dto.TrajetReqDTO;
 import com.metoa.dto.TrajetResDTO;
