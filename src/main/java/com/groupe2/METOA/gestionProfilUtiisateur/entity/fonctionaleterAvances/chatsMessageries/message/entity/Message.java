@@ -35,7 +35,6 @@ public class Message {
     @ManyToOne
     private User receiver;
 
-    private String content;
 
     @Enumerated(EnumType.STRING)
     private MessageStatus status;
@@ -46,4 +45,19 @@ public class Message {
     private boolean deleted;
 
     private LocalDateTime readAt;
+    private String id;
+
+    private String conversationId;
+    private String senderId;
+    private String receiverId;
+
+    @Column(columnDefinition = "TEXT")
+    private String content;
+
+    @Enumerated(EnumType.STRING)
+    private MessageType type;
+
+    private LocalDateTime timestamp;
+    @Embedded // 👈 Indique que les champs d'Attachment sont stockés dans la même table
+    private Attachment attachment;
 }

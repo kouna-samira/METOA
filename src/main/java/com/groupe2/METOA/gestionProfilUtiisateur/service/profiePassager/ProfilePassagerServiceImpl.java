@@ -3,8 +3,6 @@ package com.groupe2.METOA.gestionProfilUtiisateur.service.profiePassager;
 import com.groupe2.METOA.gestionProfilUtiisateur.classMapp.ProfilePassagerMapper;
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profilePassager.ProfilePassagerReqDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profilePassager.ProfilePassagerResDTO;
-import com.groupe2.METOA.gestionProfilUtiisateur.dto.profilDTO.profileStandard.ProfileResDTO;
-import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.Profile;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.profil.ProfilePassager;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.User;
 import com.groupe2.METOA.gestionProfilUtiisateur.exception.ProfilNotFoundException;
@@ -23,7 +21,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
-import java.util.Optional;
 
 @Service
 public class ProfilePassagerServiceImpl implements ProfilePassagerService {
@@ -45,23 +42,24 @@ public class ProfilePassagerServiceImpl implements ProfilePassagerService {
         User user = userRepo.findById(dto.getUserId())
                 .orElseThrow(() -> new UserNoteFoundException(dto.getUserId()));
 
-        ProfilePassager profilePassager = this.profilePassagerRepo.findByUser_IdUser(dto.getUserId())
-                .orElseThrow(()-> new ProfilNotFoundException("profile introvable"));
 
         if (profilePassagerRepo.findByUser_IdUser(dto.getUserId()).isPresent()) {
             throw new UserAlreadyExisteException("Cet utilisateur possède déjà un profile");
         }
 
-        profilePassager = profilePassagerMapper.toEntity(dto);
+        ProfilePassager profile = profilePassagerMapper.toEntity(dto);
 
 
-            profilePassager.setUser(user);
-            profilePassager.setAdresse(dto.getAdresse());
-            profilePassager.setPreferences(dto.getPreferences());
-            profilePassager.setBio(dto.getBio());
-            profilePassager.setDateCreationProfile(LocalDate.now());
-        profilePassagerRepo.save(profilePassager);
-        return profilePassagerMapper.toDto(profilePassager);
+            profile.setUser(user);
+            profile.setAdresse(dto.getAdresse());
+            profile.setPreferences(dto.getPreferences());
+            profile.setBio(dto.getBio());
+            profile.setDateCreationProfile(LocalDate.now());
+            profile.setFrequenceVoyage(dto.getFrequenceVoyage());
+            profile.setActif(true);
+            profile.setProfilVerifie(true);
+            ProfilePassager profileSaved = profilePassagerRepo.save(profile);
+        return profilePassagerMapper.toDto(profileSaved);
     }
 
     @Override

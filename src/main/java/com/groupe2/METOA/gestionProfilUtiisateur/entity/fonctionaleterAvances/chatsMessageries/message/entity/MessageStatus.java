@@ -2,5 +2,6 @@ package com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.c
 
 public enum MessageStatus {
     ENVOYE,
+    DELIVRE,
     LU
 }

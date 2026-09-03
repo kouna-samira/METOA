@@ -1,7 +1,11 @@
 package com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.message.service;
 
 
+import com.groupe2.METOA.gestionProfilUtiisateur.dto.message.MessageReqDTO;
+import com.groupe2.METOA.gestionProfilUtiisateur.dto.message.MessageResDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.conversation.entity.Conversation;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.message.AttachmentUploadController.AttachmentDTO;
+import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.message.entity.Attachment;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.message.entity.Message;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.message.entity.MessageStatus;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.user.User;
@@ -19,6 +23,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static co.elastic.clients.elasticsearch.ingest.Processor.Kind.Attachment;
 
 @Service
 @Builder
@@ -62,7 +68,8 @@ public class MessageServiceImpl implements MessageService{
     }
 
     @Override
-    public List<Message> getMessages(String conversationId) {
+    public List<MessageResDTO> getMessages(String conversationId) {
+
         return messageRepo.findByConversation_ConversationIdOrderBySentAtAsc(conversationId);
     }
 
@@ -75,19 +82,20 @@ public class MessageServiceImpl implements MessageService{
 
     @Override
     public long countUnreadMessages(String conversationId, String userId) {
-        return  messageRepo.countByConversation_ConversationIdAndReceiver_IdUserAndStatus(
+        // Compte tous les messages qui ne sont PAS encore marqués comme LU
+        return messageRepo.countByConversation_ConversationIdAndReceiver_IdUserAndStatusNot(
                 conversationId,
                 userId,
-                MessageStatus.ENVOYE
+                MessageStatus.LU
         );
     }
 
     @Override
-    public Page<Message> getMessagesPaginated(String conversationId, int page, int size) {
+    public Page<MessageResDTO> getMessagesPaginated(String conversationId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
         return messageRepo
-                .findByConversation_ConversationIdOrderBySentAtAsc(conversationId, pageable);
+                .findByConversationConversationIdOrderBySentAtDesc(conversationId, pageable);
 
     }
     @Override
@@ -113,4 +121,77 @@ public class MessageServiceImpl implements MessageService{
 
         messageRepo.save(message);
     }
+    @Override
+    @Transactional
+    public Message markAsDelivered(String messageId) {
+        Message message = messageRepo.findById(messageId)
+                .orElseThrow(() -> new RuntimeException("Message introuvable"));
+
+        // Ne mettre à jour que si le message n'est pas déjà LU
+        if (message.getStatus() == MessageStatus.ENVOYE) {
+            message.setStatus(MessageStatus.DELIVRE);
+            return messageRepo.save(message);
+        }
+
+        return message;
+    }
+
+    @Override
+    @Transactional
+    public MessageResDTO saveMessage(MessageReqDTO dto) {
+        // 1. Créer l'entité Message
+        Message message = new Message();
+        message.setConversationId(dto.getConversationId());
+        message.setSenderId(dto.getSenderId());
+        message.setReceiverId(dto.getReceiverId());
+        message.setContent(dto.getContent());
+        message.setType(dto.getType());
+        message.setStatus(MessageStatus.ENVOYE);
+        message.setTimestamp(LocalDateTime.now());
+
+        // 2. Associer les métadonnées de la pièce jointe si présente
+        if (dto.getAttachment() != null) {
+            Attachment attachment = new Attachment();
+            attachment.setFileUrl(dto.getAttachment().getFileUrl());
+            attachment.setFileName(dto.getAttachment().getFileName());
+            attachment.setFileType(dto.getAttachment().getFileType());
+            attachment.setFileSize(dto.getAttachment().getFileSize());
+
+            message.setAttachment(attachment);
+        }
+
+        // 3. Sauvegarder en BDD
+        Message savedMessage = messageRepo.save(message);
+
+        // 4. Convertir et retourner le DTO de réponse
+        return mapToResDTO(savedMessage);
+    }
+    private AttachmentDTO mapAttachmentDTO(Attachment attachment) {
+        if (attachment == null) {
+            return null;
+        }
+
+        return AttachmentDTO.builder()
+                .fileUrl(attachment.getFileUrl())
+                .fileName(attachment.getFileName())
+                .fileType(attachment.getFileType())
+                .fileSize(attachment.getFileSize())
+                .build();
+    }
+
+    private MessageResDTO mapToResDTO(Message entity) {
+        // Logique de conversion Entity -> DTO (ou via MapStruct)
+        return MessageResDTO.builder()
+                .messageId(entity.getId())
+                .conversationId(entity.getConversationId())
+                .senderId(entity.getSenderId())
+                .receiverId(entity.getReceiverId())
+                .content(entity.getContent())
+                .type(entity.getType())
+                .status(entity.getStatus())
+                .timestamp(entity.getTimestamp())
+                .attachment(entity.getAttachment() != null ? mapAttachmentDTO(entity.getAttachment()) : null)
+                .build();
+    }
+
 }

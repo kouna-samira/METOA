@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,15 +26,16 @@ public class DocumentController {
         this.service = service;
     }
 
+
     // UPLOAD
     @Operation(summary = "import document")
-    @PostMapping(consumes = "multipart/form-data")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String,String>> uploadDocument(
             @PathVariable String userId,
             @RequestPart("file") MultipartFile file,
-            @RequestPart("type") TyperDocument typerDocument) {
+            @RequestParam TyperDocument type) {
 
-        String url = service.uploadDocument(userId, file, typerDocument);
+        String url = service.uploadDocument(userId, file, type);
         return ResponseEntity.ok(Map.of("documentUrl", url));
     }
 

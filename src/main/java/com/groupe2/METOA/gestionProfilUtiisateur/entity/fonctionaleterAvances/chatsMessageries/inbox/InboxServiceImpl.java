@@ -1,59 +1,120 @@
 package com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.inbox;
 
-import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.conversation.entity.Conversation;
+import com.groupe2.METOA.gestionProfilUtiisateur.dto.message.MessageResDTO;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.conversation.repo.ConversationRepo;
-import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.message.entity.Message;
-import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.message.entity.MessageStatus;
 import com.groupe2.METOA.gestionProfilUtiisateur.entity.fonctionaleterAvances.chatsMessageries.message.repo.MessageRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.awt.*;
+
+import static org.hibernate.type.StandardBasicTypes.IMAGE;
 
 @Service
 public class InboxServiceImpl implements InboxService {
 
     private final ConversationRepo conversationRepo;
+    private final SimpMessagingTemplate messagingTemplate;
     private final MessageRepo messageRepo;
 
-    public InboxServiceImpl(ConversationRepo conversationRepo, MessageRepo messageRepo) {
+    public InboxServiceImpl(ConversationRepo conversationRepo, SimpMessagingTemplate messagingTemplate, MessageRepo messageRepo) {
         this.conversationRepo = conversationRepo;
+        this.messagingTemplate = messagingTemplate;
         this.messageRepo = messageRepo;
     }
 
     @Override
-    public List<InboxDTO> getInbox(String userId) {
+    public Page<InboxDTO> getInbox(String userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return conversationRepo.getInbox(userId, pageable)
+                .map(this::mapToDTO);
+    }
 
-        List<Conversation> conversations = conversationRepo.findAll();
+    @Override
+    public InboxDTO getSingleInbox(String userId, String conversationId) {
+        InboxProjection projection = conversationRepo.getSingleInboxForUser(userId, conversationId)
+                .orElseThrow(() -> new RuntimeException("Conversation non trouvée pour cet utilisateur"));
+        return mapToDTO(projection);
+    }
 
-        return conversations.stream()
-                .filter(c -> c.getUser1().getIdUser().equals(userId)
-                        || c.getUser2().getIdUser().equals(userId))
-                .map(c -> {
+    private InboxDTO mapToDTO(InboxProjection p) {
+        return InboxDTO.builder()
+                .conversationId(p.getConversationId())
+                .otherUserId(p.getOtherUserId())
+                .otherUsername(p.getOtherUsername())
+                .otherUserPhoto(p.getOtherPhoto())
+                .lastMessage(p.getLastMessage())
+                .lastMessageDate(p.getLastMessageDate())
+                .unreadCount(p.getUnreadCount())
+                .build();
+    }
 
-                    List<Message> messages =
-                            messageRepo.findByConversation_ConversationIdOrderBySentAtAsc(c.getConversationId());
+    @Override
+    public void notifyInboxUpdate(MessageResDTO message) {
+        // 1. Notifier le destinataire (avec son nombre de messages non lus)
+        long unreadForReceiver = messageRepo.countUnreadMessages(
+                message.getConversationId(),
+                message.getReceiverId()
+        );
 
-                    Message last = messages.isEmpty() ? null : messages.get(messages.size() - 1);
+        InboxDTO receiverInboxDTO = InboxDTO.builder()
+                .conversationId(message.getConversationId())
+                .otherUserId(message.getSenderId())
+                .lastMessage(buildPreviewText(message))
+                .lastMessageDate(message.getTimestamp())
+                .unreadCount((int) unreadForReceiver)
+                .build();
 
-                    String otherUser = c.getUser1().getIdUser().equals(userId)
-                            ? c.getUser2().getIdUser()
-                            : c.getUser1().getIdUser();
+        messagingTemplate.convertAndSendToUser(
+                message.getReceiverId(),
+                "/queue/inbox",
+                receiverInboxDTO
+        );
 
-                    long unread = messageRepo
-                            .countByConversation_ConversationIdAndReceiver_IdUserAndStatus(
-                                    c.getConversationId(),
-                                    userId,
-                                    MessageStatus.ENVOYE
-                            );
+        // 2. Notifier l'expéditeur (avec unreadCount = 0 pour cette conversation)
+        InboxDTO senderInboxDTO = InboxDTO.builder()
+                .conversationId(message.getConversationId())
+                .otherUserId(message.getReceiverId())
+                .lastMessage(buildPreviewText(message))
+                .lastMessageDate(message.getTimestamp())
+                .unreadCount(0)
+                .build();
 
-                    return InboxDTO.builder()
-                            .conversationId(c.getConversationId())
-                            .otherUserId(otherUser)
-                            .lastMessage(last != null ? last.getContent() : null)
-                            .lastMessageDate(last != null ? last.getSentAt() : null)
-                            .unreadCount(unread)
-                            .build();
-                })
-                .toList();
+        messagingTemplate.convertAndSendToUser(
+                message.getSenderId(),
+                "/queue/inbox",
+                senderInboxDTO
+        );
+    }
+
+    private String buildPreviewText(MessageResDTO message) {
+        if (message == null || message.getType() == null) {
+            return "";
+        }
+
+        switch (message.getType()) {
+            case IMAGE:
+                return "📷 Photo";
+
+            case AUDIO:
+
+                return "🎤 Message vocal";
+
+
+            case FILE:
+                // Si le nom du fichier est dans l'attachment, on l'affiche, sinon le contenu
+                if (message.getAttachment() != null && message.getAttachment().getFileName() != null) {
+                    return "📄 Fichier : " + message.getAttachment().getFileName();
+                }
+                return "📄 Fichier joint";
+
+            case TEXT:
+            default:
+                // Pour du texte, on retourne le contenu du message
+                return message.getContent() != null ? message.getContent() : "";
+        }
     }
 }

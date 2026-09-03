@@ -6,7 +6,6 @@ import com.groupe2.METOA.gestionProfilUtiisateur.entity.historiqueTrajet.StatusT
 import com.groupe2.METOA.gestionProfilUtiisateur.service.historqueTrajet.HistoriqueTrajetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +22,7 @@ public class HistoriqueTrajetController {
     }
     @Operation(summary = "Afficher tous les trajets d’un utilisateur par statut")
     @GetMapping("/user/{idUser}/status/{statusTrajet}")
-    public ResponseEntity<List<HistoriqueTrajetResDTO>> getTrajetByUserIdAndStatusTrajet(@PathVariable @Valid String idUser, @RequestBody @Valid StatusTrajet statusTrajet){
+    public ResponseEntity<List<HistoriqueTrajetResDTO>> getTrajetByUserIdAndStatusTrajet(@PathVariable  String idUser, @PathVariable   StatusTrajet statusTrajet){
         return ResponseEntity.status(200).body(this.historiqueTrajetService.getFindByUserIdAndStatusTrajet(idUser ,statusTrajet));
     }
 
