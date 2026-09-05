@@ -10,6 +10,8 @@ import com.groupe2.METOA.gestionProfilUtiisateur.repository.UserRepo;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -75,7 +77,9 @@ public class AuthServiceImpl implements AuthService {
                 .passe(passwordEncoder.encode(dto.getPasse()))
                 .role(dto.getRole())
                 .statusUser(StatusUser.ACTIF)
-                .visibiliteTelephone(true).build();
+                .visibiliteTelephone(true)
+                .dateInscription(LocalDateTime.now())
+                .build();
 
         userRepo.save(user);
     }
