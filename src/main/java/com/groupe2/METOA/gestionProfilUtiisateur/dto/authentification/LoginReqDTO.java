@@ -1,6 +1,7 @@
 package com.groupe2.METOA.gestionProfilUtiisateur.dto.authentification;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,11 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Slf4j
 public class LoginReqDTO {
-    @Email(message = "votre email est erronee !")
-    @NotEmpty(message = "entrez votre email !")
+
+    @NotBlank(message = "L'email est obligatoire")
+    @Email(message = "L'adresse email est invalide")
     private String email;
-    @NotEmpty(message = "entrez votre mote de passe !")
-    private String motDePasse;
+
+    @NotBlank(message = "Le mot de passe est obligatoire")
+    private String passe;
 }

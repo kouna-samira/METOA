@@ -12,8 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Slf4j
 public class LoginResDTO {
+
     private String token;
-    private UserResDTO userResDTO;
+
+    private UserResDTO user;
 }
